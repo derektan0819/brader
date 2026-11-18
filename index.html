@@ -956,6 +956,100 @@ html.light .range::-webkit-slider-thumb{background:#fff}
 .sptotal{margin:4px 0 0;font-size:14px;color:var(--ink2)}
 .sprange{display:block;width:100%;height:30px;accent-color:var(--cyan)}
 @media (max-width:760px){.dfacts{grid-template-columns:repeat(2,minmax(0,1fr))}.drow{grid-template-columns:34px minmax(0,1fr)}.dbtns{grid-column:2;justify-content:flex-start}}
+/* ================= 手机版 ================= */
+.pz-tabs,.pz-grab{display:none}
+html.phone .side,html.phone .scrim{display:none!important}
+html.phone .layout{display:block;min-height:0}
+html.phone .topbar{display:flex;position:sticky;top:env(safe-area-inset-top,0px);z-index:20;align-items:center;gap:8px;min-height:56px;padding:6px max(12px,env(safe-area-inset-right,0px)) 6px max(12px,env(safe-area-inset-left,0px));background:var(--top-bg);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+html.phone .topbar .t{flex:1;min-width:0;font-weight:700;font-size:17px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+html.phone .topbar .mark{width:30px;height:30px;font-size:14px;border-radius:9px}
+html.phone .topbar .btn.icon{width:40px;min-height:40px;height:40px}
+html.phone .main{padding:12px max(14px,env(safe-area-inset-right,0px)) calc(92px + env(safe-area-inset-bottom,0px)) max(14px,env(safe-area-inset-left,0px))}
+html.phone #main>.phead h1{display:none}
+html.phone #main>.phead{margin-bottom:12px}
+html.phone #toastRoot{bottom:calc(86px + env(safe-area-inset-bottom,0px))}
+html.phone .shade{align-items:flex-end;padding:0}
+html.phone .modal{max-width:none;max-height:90vh;border-radius:20px 20px 0 0;padding-bottom:env(safe-area-inset-bottom,0px);animation:pzup .26s var(--ease) backwards;transition:transform .2s var(--ease)}
+html.phone .shade.closing .modal{animation:pzdown .15s ease forwards}
+@keyframes pzup{from{transform:translateY(100%)}}
+@keyframes pzdown{to{transform:translateY(100%)}}
+html.phone .pz-grab{display:block;flex:none;width:42px;height:5px;margin:9px auto -8px;border-radius:99px;background:var(--line2)}
+html.phone .mhead{touch-action:none}
+html.phone .mbody{overscroll-behavior:contain}
+html.phone .mfoot .btn{flex:1}
+.pz-panel .card{padding:0;background:none;border:0;box-shadow:none}
+.pz-panel .chead h2{display:none}
+html.phone .pz-tabs{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));align-items:end;position:fixed;left:0;right:0;bottom:0;z-index:30;padding:4px max(6px,env(safe-area-inset-right,0px)) calc(4px + env(safe-area-inset-bottom,0px)) max(6px,env(safe-area-inset-left,0px));background:linear-gradient(var(--top-bg),var(--top-bg)),var(--bg);border-top:1px solid var(--line)}
+html.phone.pz-new .pz-tabs,html.phone.pz-new .topbar{display:none}
+html.phone.pz-new .main{padding-bottom:24px}
+.pz-tab,.pz-plus{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:2px;min-height:54px;padding:4px 0;border:0;background:none;color:var(--muted);font-size:12px;font-weight:600}
+.pz-tab .i{width:23px;height:23px}
+.pz-tab[aria-current=page]{color:var(--cyan)}
+.pz-dot{position:absolute;top:6px;left:calc(50% + 7px);width:9px;height:9px;border-radius:50%;background:var(--bad);border:2px solid var(--bg)}
+.pz-plus{color:var(--ink)}
+.pz-pc{display:grid;place-items:center;width:52px;height:52px;margin-top:-24px;border-radius:50%;color:var(--on-cyan,#061019);background:linear-gradient(135deg,var(--cyan),var(--purple));box-shadow:0 8px 22px -6px rgba(55,217,232,.65)}
+.pz-pc .i{width:26px;height:26px}
+.pz-plus:active .pz-pc{transform:scale(.93)}
+.pz-hero{position:relative;overflow:hidden;display:grid;grid-template-columns:minmax(0,1fr) 112px;gap:12px;align-items:center;padding:20px 18px}
+.pz-hl{display:flex;flex-direction:column;min-width:0}
+.pz-l{font-size:13.5px;color:var(--muted)}
+.pz-big{margin:2px 0;font:800 36px/1.15 var(--f-num);color:var(--cyan);font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.pz-big.tx{font-size:26px}
+.pz-s{font-size:13px;color:var(--muted);line-height:1.5}
+.pz-dn{display:flex;flex-wrap:wrap;align-items:center;gap:6px;font-size:20px;overflow-wrap:anywhere}
+.pz-hero .pz-hr{width:112px;height:112px;justify-self:end}
+.pz-hero .pz-hr .ring-c b{font-size:24px}
+.pz-hero .pz-hr .ring-c span{font-size:11.5px}
+.pz-cta{grid-column:1/-1;display:flex;width:100%;justify-content:center;min-height:50px;font-size:16px}
+.pz-dh{grid-template-columns:minmax(0,1fr)}
+.pz-next{width:100%;margin:12px 0;text-align:left;color:var(--ink);flex-wrap:nowrap}
+.pz-next>.i{flex:none;color:var(--muted)}
+.pz-next .t>span:last-child{display:flex;flex-direction:column;min-width:0}
+.pz-tiles{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);gap:8px}
+.pz-tile{display:flex;flex-direction:column;align-items:flex-start;gap:2px;min-width:0;padding:12px;border-radius:14px;border:1px solid var(--line);background:var(--card);color:var(--ink);text-align:left}
+.pz-tile .i{width:20px;height:20px;color:var(--cyan);margin-bottom:4px}
+.pz-tile b{font-size:14px}
+.pz-tile small{font-size:12px;color:var(--muted);overflow-wrap:anywhere}
+.pz-seg{display:flex;flex:1;min-width:0;gap:4px;padding:4px;border-radius:12px;background:var(--card2)}
+.pz-seg button{flex:1;min-width:0;min-height:40px;border:0;border-radius:9px;background:none;color:var(--muted);font-size:14px;font-weight:600;white-space:nowrap}
+.pz-seg button[aria-selected=true]{background:var(--card3);color:var(--ink)}
+.pz-gh{display:flex;align-items:center;gap:8px;margin-bottom:12px}
+.pz-gh .btn.icon{flex:none;width:48px;height:48px}
+.pz-rows{padding:4px 0;overflow:hidden}
+.pz-rw{position:relative;overflow:hidden;border-top:1px solid var(--line)}
+.pz-rw:first-child{border-top:0}
+.pz-act{position:absolute;top:0;right:0;bottom:0;width:84px;border:0;background:var(--warn);color:#17120A;font-size:14px;font-weight:700}
+.pz-row{position:relative;display:flex;align-items:center;gap:8px;padding:10px 12px;background:var(--card);transition:transform .2s var(--ease);touch-action:pan-y}
+.pz-rm{display:flex;flex:1;align-items:center;gap:12px;min-width:0;padding:0;border:0;background:none;color:var(--ink);text-align:left}
+.pz-rr{flex:none;width:52px;height:52px}
+.pz-rr .ring-c b{font-size:13px}
+.pz-lt{display:flex;flex:1;flex-direction:column;min-width:0}
+.pz-lt b{font-size:15px;font-weight:600;overflow-wrap:anywhere}
+.pz-lt small{margin-top:2px;font-size:12.5px;line-height:1.45;color:var(--muted)}
+.pz-hint{margin-top:10px;text-align:center}
+.pz-list{padding-top:6px;padding-bottom:6px}
+.pz-li{display:flex;align-items:center;gap:12px;width:100%;min-height:60px;padding:10px 0;border:0;border-top:1px solid var(--line);background:none;color:var(--ink);text-align:left}
+.pz-li:first-child,.chead+.pz-li{border-top:0}
+.pz-li>.i{flex:none;width:21px;height:21px;color:var(--muted)}
+.pz-amt{font:700 15px var(--f-num);white-space:nowrap}
+.pz-sw{min-height:56px;padding:8px 0;border-radius:0;color:var(--ink)}
+.pz-switch{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;min-height:50px;margin-bottom:10px;padding:10px 14px;border-radius:12px;border:1px solid var(--line2);background:var(--card2);color:var(--ink);text-align:left}
+.pz-switch .c{flex:none;color:var(--cyan);font-weight:600}
+.pz-gtop{position:sticky;top:calc(56px + env(safe-area-inset-top,0px));z-index:15;margin:-12px -14px 12px;padding:8px 14px 10px;background:linear-gradient(var(--top-bg),var(--top-bg)),var(--bg);border-bottom:1px solid var(--line)}
+.pz-gsum{display:flex;align-items:center;gap:12px;margin-bottom:8px}
+.pz-goal>.phead,.pz-goal>.back,.pz-goal>.kpis{display:none}
+.pz-goal [data-pzt]:not(.pz-on){display:none!important}
+.pz-goal details.sec>summary{cursor:default;pointer-events:none}
+.pz-goal details.sec>summary::after,.pz-goal details.sec>summary .hint{display:none}
+.pz-gact{display:flex;margin-bottom:12px}
+.pz-gact .btn{flex:1;min-height:46px}
+.pz-welcome{display:flex;flex-direction:column;justify-content:center;min-height:calc(100vh - 40px);padding:24px 6px;text-align:center}
+.pz-welcome h1{margin:16px 0 6px;font-size:28px}
+.pz-welcome .lead{margin:0 0 18px}
+.pz-welcome .inp input{font-size:17px!important;min-height:54px;text-align:left}
+.pz-welcome .chips{justify-content:center;margin:14px 0 0}
+.pz-welcome .ares{text-align:left}
+.pz-welcome .pz-cta{margin-top:12px}
 #pCode{display:block;width:100%;min-height:96px;padding:10px 12px;border:0;background:none;color:var(--ink);font:inherit;font-size:13px;resize:vertical;outline:0}
 </style>
 <script>try{if(localStorage.getItem("brader-theme")==="light"){document.documentElement.classList.add("light");var tc=document.querySelector('meta[name="theme-color"]');if(tc)tc.setAttribute("content","#F3F5FA")}}catch(e){}</script>
@@ -974,6 +1068,7 @@ html.light .range::-webkit-slider-thumb{background:#fff}
 </div>
 <div class="scrim" id="scrim" hidden></div>
 <div id="sheetRoot"></div>
+<nav class="pz-tabs" id="tabbar" aria-label="主要页面"></nav>
 <div id="toastRoot"></div>
 <canvas id="confetti" hidden></canvas>
 
@@ -989,6 +1084,9 @@ const carTier=I=>CAR_TIERS.find(t=>I*12<t.max);
 const HOUSE_LOAN_PCT=0.9, HOUSE_PMT_PER_100K=475;                // 房贷：贷房价 90%，四厘三十年每 RM100,000 月供约 RM475（Brader 的例子：贷 200k、4%、三十年，每月 950 块）
 /* ================= helpers ================= */
 const $=s=>document.querySelector(s);
+const PHQ=window.matchMedia?matchMedia("(max-width:760px)"):{matches:false}, isPh=()=>PHQ.matches;
+let PZSEG="active", PZPREV=null, PZT={id:null,tab:"now"};
+const applyPh=()=>document.documentElement.classList.toggle("phone",isPh()); applyPh();
 const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 // 遮住金额（只存在这台机器）：所有金额显示成 RM ****
 const HIDEKEY="brader-hide";
@@ -1584,7 +1682,7 @@ function bindChart(g,s){
 }
 
 /* ================= sidebar, drawer, navigation ================= */
-const PAGE_NAME={overview:"总览",goals:"我的目标",debt:"还债计划",ask:"问 Brader",done:"成就墙",paused:"暂停中的目标"};
+const PAGE_NAME={overview:"总览",goals:"我的目标",debt:"还债计划",me:"我的",ask:"问 Brader",done:"成就墙",paused:"暂停中的目标"};
 let DRAWER=false;
 function navActive(){ if(VIEW.page!=="goal") return VIEW.page; const g=GOALS.find(x=>x.id===VIEW.id); return !g?"goals":g.status==="done"?"done":g.status==="paused"?"paused":"goals"; }
 function renderSide(){
@@ -1612,6 +1710,8 @@ function renderSide(){
   $("#hideBtn").onclick=()=>setHide(!HIDE);
   $("#themeBtn").onclick=()=>setTheme(!LIGHT,$("#themeBtn"));
   $("#keysBtn").onclick=()=>{ setDrawer(false); openKeys(); };
+  renderTabs();
+  if(isPh()){ pzTop(); return; }
   const g=VIEW.page==="goal"?GOALS.find(x=>x.id===VIEW.id):null;
   $("#topbar").innerHTML=`<button class="btn ghost icon" type="button" id="menuBtn" aria-label="打开菜单" aria-controls="side" aria-expanded="${DRAWER}">${svgI("menu")}</button>
     <div class="mark" aria-hidden="true">B</div><div class="t">${g?esc(g.name):PAGE_NAME[VIEW.page]||"Brader"}</div>
@@ -1627,13 +1727,15 @@ function setDrawer(open){
   if(open){ const f=$("#side [aria-current]")||$("#side button"); if(f) setTimeout(()=>f.focus(),30); }
 }
 let ENTER=true, ENTER_T=0;
-function go(page,id){ VIEW={page,id:id||null}; ENTER=true; MEM.clear(); const wasOpen=DRAWER; setDrawer(false); render(); window.scrollTo(0,0); if(wasOpen) $("#main").focus({preventScroll:true}); }
+function go(page,id){ if(VIEW.page!==page) PZPREV=VIEW.page; VIEW={page,id:id||null}; ENTER=true; MEM.clear(); const wasOpen=DRAWER; setDrawer(false); render(); window.scrollTo(0,0); if(wasOpen) $("#main").focus({preventScroll:true}); }
 function render(){
   if(VIEW.page==="goal"&&!GOALS.find(g=>g.id===VIEW.id)) VIEW={page:"overview",id:null};
+  if(!isPh()&&VIEW.page==="me") VIEW={page:"overview",id:null};
+  if(isPh()&&VIEW.page==="paused"){ PZSEG="paused"; VIEW={page:"goals",id:null}; }
   closeMenu(); clearInterval(QT);
   renderSide();
-  const m=$("#main"); m.classList.remove("enter");
-  ({overview:renderOverview,goals:renderGoals,goal:renderGoal,debt:renderDebt,ask:renderAsk,done:renderDone,paused:renderPaused})[VIEW.page]();
+  const m=$("#main"); m.classList.remove("enter","pz-goal");
+  ({overview:renderOverview,goals:renderGoals,goal:renderGoal,debt:renderDebt,me:renderMe,ask:renderAsk,done:renderDone,paused:renderPaused})[VIEW.page]();
   if(ENTER){ void m.offsetWidth; m.classList.add("enter"); clearTimeout(ENTER_T); ENTER_T=setTimeout(()=>m.classList.remove("enter"),fxOn()?2000:450); if(fxOn()) hyperText(m); }
   ENTER=false;
   runAnims(document);
@@ -1671,6 +1773,7 @@ function goalRowBtn(g,s){ const p=+(s.pct*100).toFixed(1), w=nextWp(g), left=Mat
     <span class="gnum"><b>${Math.round(s.pct*100)}%</b><span>${left>0?"还差 "+rmk(left):"金额够了"}</span></span></button>`; }
 function renderOverview(){
   const act=activeSorted();
+  if(!GOALS.length&&isPh()){ renderWelcomePh(); return; }
   if(!GOALS.length){
     $("#main").innerHTML=`<section class="card welcome">${beamHTML(true)}
       <div class="mark" aria-hidden="true">B${sparklesHTML(4)}</div>
@@ -1755,6 +1858,7 @@ function renderOverview(){
       <div class="tiles">${tiles.map(x=>`<div class="tile"><div class="l">${x.c?`<span class="dot ${x.c}"></span>`:""}${x.l}</div><div class="v" style="color:${x.c?`var(--${x.c})`:"var(--muted)"}">${x.v}</div><div class="s">${x.s}</div></div>`).join("")}</div></section>`;
   }
   const flowCard=`<section class="card"><div class="chead"><div><h2>每月现金流分配</h2></div></div>${flow}</section>`;
+  if(isPh()){ renderHomePh({act,stats,ns,hasEF,efOpen,pctAll,flowCard,health,far,surplus}); return; }
   $("#main").innerHTML=`
     <div class="phead"><div><h1>总览</h1><div class="meta"><span>${new Date().getFullYear()}年${new Date().getMonth()+1}月${new Date().getDate()}日</span><span>${act.length} 个目标进行中</span></div></div></div>
     <div class="next ${ns.tone}">${beamHTML(true)}<div class="t"><span class="ic">${svgI(ns.ic)}</span><div><span class="lbl">下一步</span><b>${ns.t}</b><span>${ns.d}</span></div></div><button class="btn ${ns.tone==="ok"?"ghost":"pri"} sm" type="button" id="nsBtn">${ns.b}</button></div>
@@ -1785,6 +1889,7 @@ function renderOverview(){
 
 /* ================= 我的目标 ================= */
 function renderGoals(){
+  if(isPh()){ renderGoalsPh(); return; }
   const act=activeSorted();
   $("#main").innerHTML=`
     <div class="phead"><div><h1>我的目标</h1><div class="meta"><span>${act.length} 个进行中</span><span>点一个目标看详细计划</span></div></div>
@@ -1807,7 +1912,7 @@ const pctOf=(g,v)=>v>=g.target?100:Math.max(0,Math.min(99,Math.floor(v/Math.max(
 // a small amount that doesn't move the whole-number % shows one decimal, so every button visibly moves you forward
 const pctStep=(g,v)=>{ const a=pctOf(g,v); if(a!==pctOf(g,g.saved)) return a; return String(Math.min(99.9,Math.floor(v/Math.max(1,g.target)*1000)/10)); };
 function bindQuick(){ $("#main").querySelectorAll("[data-qadd]").forEach(b=>b.onclick=e=>{ e.stopPropagation(); const g=GOALS.find(x=>x.id===b.dataset.qadd); if(g) openQuick(g); }); }
-function openQuick(g){
+function openQuick(g,opt){ const pick=!!(opt&&opt.pick)&&activeSorted().filter(x=>x.saved<x.target).length>1;
   const s=stat(g), base=Math.round(s.budget||s.monthly), left=Math.ceil(Math.max(0,g.target-g.saved));
   const A=[50,100,500].map(v=>({v,top:v===base?"本月建议":"存入",l:rmRaw(v),raw:1}));
   if(base>0&&![50,100,500].includes(base)) A.push({v:base,top:"本月建议",l:rm(base)});
@@ -1815,8 +1920,8 @@ function openQuick(g){
   A.sort((a,b)=>a.v-b.v);
   let busy=false;
   const go1=(v,from)=>{ if(busy) return; busy=true; quickDeposit(g,v,from); };
-  modal({title:"快速存入",sub:esc(g.name),form:"qForm",
-    body:`<p class="cur">目前已存 <b>${rm(g.saved)}</b> / ${rm(g.target)} · ${pctOf(g,g.saved)}%</p>
+  modal({title:pick||(opt&&opt.pick)?"存钱":"快速存入",sub:pick?"":esc(g.name),form:"qForm",
+    body:`${pick?`<button class="pz-switch" type="button" id="qSwitch"><span>存进：<b>${esc(g.name)}</b></span><span class="c">换 ›</span></button>`:""}<p class="cur">目前已存 <b>${rm(g.saved)}</b> / ${rm(g.target)} · ${pctOf(g,g.saved)}%</p>
       <div class="qamts" role="group" aria-label="选一个金额，一按就存">${A.map(a=>{ const full=g.saved+a.v>=g.target-1e-9;
         return `<button type="button" class="qamt${full?" full":""}" data-qa="${a.v}"><span>${a.top}</span><b${a.raw?" data-nomask":""}>${a.l}</b><span>${full?'<span class="gd">→ 100% ✓ 存够</span>':`→ ${pctStep(g,g.saved+a.v)}%`}</span></button>`; }).join("")}</div>
       <div class="field" id="fQ" style="margin-bottom:6px"><label for="qAmt">其他金额</label><div class="qother"><div class="inp"><span>RM</span><input id="qAmt" type="number" inputmode="decimal" min="0" step="any" placeholder="例如 300" autocomplete="off"></div><button class="btn pri" type="submit" id="qOk">存入</button></div><div class="ferr"></div></div>
@@ -1825,11 +1930,11 @@ function openQuick(g){
     onMount:()=>{
       $("#sheetRoot").querySelectorAll("[data-qa]").forEach(b=>b.onclick=()=>go1(+b.dataset.qa,b.getBoundingClientRect()));
       $("#qAmt").addEventListener("input",()=>fieldErr("#fQ",""));
-      $("#qMore").onclick=()=>openUpdate(g);
+      $("#qMore").onclick=()=>openUpdate(g); if($("#qSwitch")) $("#qSwitch").onclick=()=>openGoalPick(g.id);
       $("#qForm").onsubmit=e=>{ e.preventDefault(); const r=readNum("#qAmt",{required:true,gt:0}); if(r.err){ fieldErr("#fQ",r.err); $("#qAmt").focus(); return; } go1(r.v,$("#qOk").getBoundingClientRect()); };
     }});
 }
-const quickTarget=id=>$(`#main .growwrap[data-id="${id}"] .gnum b`)||$(`#main .gcard[data-id="${id}"] .ring`)||$("#main .hero .ring");
+const quickTarget=id=>$(`#main [data-fly="${id}"]`)||$("#main .pz-fly")||$(`#main .growwrap[data-id="${id}"] .gnum b`)||$(`#main .gcard[data-id="${id}"] .ring`)||$("#main .hero .ring");
 function bump(el){ if(!el) return; el.classList.remove("bump"); void el.offsetWidth; el.classList.add("bump"); setTimeout(()=>el.classList.remove("bump"),600); }
 function quickDeposit(g,v,from){
   if(!(v>0)) return;
@@ -2110,6 +2215,7 @@ function renderGoal(){
   bindChart(g,s);
   bindTodo(g,steps); bindKeep();
   if(WI) bindWhatIf(g,s,base,WI,wiNow);
+  if(isPh()) pzGoal(g,s,left);
 }
 // snap/view (optional): the state before the 存入 that finished the goal, so 撤销 takes back both
 function completeGoal(g,snap,view){ if(!snap){ snap=snapState(); view={page:VIEW.page,id:VIEW.id}; }
@@ -2572,18 +2678,18 @@ function renderPaused(){
 
 /* ================= modals ================= */
 let LASTFOCUS=null, CLOSE_T=0;
-function modal({title,sub,body,foot,form,onMount,focus}){
+function modal({title,sub,body,foot,form,onMount,focus,cls}){
   clearTimeout(CLOSE_T);
   if(!$("#shade")) LASTFOCUS=document.activeElement;
   const inner=`<div class="mbody">${body}</div>${foot?`<div class="mfoot">${foot}</div>`:""}`;
-  $("#sheetRoot").innerHTML=`<div class="shade" id="shade"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="mTitle">
+  $("#sheetRoot").innerHTML=`<div class="shade" id="shade"><div class="modal${cls?" "+cls:""}" role="dialog" aria-modal="true" aria-labelledby="mTitle"><div class="pz-grab" aria-hidden="true"></div>
     <div class="mhead"><div><h2 id="mTitle">${title}</h2>${sub?`<p>${sub}</p>`:""}</div><button class="x" type="button" id="xBtn" aria-label="关闭">×</button></div>
     ${form?`<form id="${form}" novalidate>${inner}</form>`:inner}</div></div>`;
   $("#xBtn").onclick=closeSheet;
   $("#shade").addEventListener("mousedown",e=>{ if(e.target.id==="shade") closeSheet(); });
-  onMount&&onMount();
+  onMount&&onMount(); pzDrag();
   const f=(focus&&$(focus))||$("#sheetRoot .mbody input:not([type=hidden]),#sheetRoot .mbody select,#sheetRoot .mbody textarea")||$("#sheetRoot .mfoot .btn");
-  if(f) setTimeout(()=>{ if(f.isConnected) f.focus(); },30);
+  if(f) setTimeout(()=>{ if(!f.isConnected) return; if(isPh()&&!/^(INPUT|TEXTAREA|SELECT)$/.test(f.tagName)){ const m=$("#sheetRoot .modal"); if(m){ m.tabIndex=-1; m.style.outline="none"; m.focus({preventScroll:true}); } } else f.focus(); },30);
 }
 function closeSheet(){
   const sh=$("#shade"); if(!sh) return;
@@ -2618,6 +2724,8 @@ function ymOptions(sel){ const out=[]; let found=false; for(let i=1;i<=480;i++){
   if(sel&&!found) out.unshift(`<option value="${sel}" selected>${ymLabel(sel)}（已过）</option>`); return out.join(""); }
 
 /* ---- new goal ---- */
+function createGoal({type,text,name,target,deadline,saved,extra}){ const g=norm({id:uid(),type,text,name,target,deadline,start:today(),startAmt:saved,saved,log:[],extra,status:"active"});
+  GOALS.push(g); save(); closeSheet(); toast("目标已建立"); go("goal",g.id); if(fxOn()) setTimeout(()=>burstAt(innerWidth/2,innerHeight*.3,80,10),220); afterGoal(g); }
 function easeHTML(m,free){
   if(m<=0) return `<span class="ok">✓ 轻松：已经存够了</span>`;
   if(!S.income) return `<span class="dim">在「我的资料」填收入和开销，就能算难度</span>`;
@@ -2634,7 +2742,7 @@ function openAdd(prefill,over){
         <div class="chips" id="aChips" data-nomask>${EX.map(e=>`<button class="chip" type="button">${esc(e)}</button>`).join("")}</div></div>
       <div class="calc" id="aCalc" aria-live="polite"></div>
       <div id="aEst"></div>
-      <button class="linkbtn amore" type="button" id="aMore" aria-expanded="false" aria-controls="aFields"></button>
+      <button class="linkbtn amore" type="button" id="aFold" aria-expanded="false" aria-controls="aFields"></button>
       <div id="aFields" hidden>
       <div class="field" id="fName"><label for="aName">目标名称</label><div class="inp"><input id="aName" type="text" maxlength="40" placeholder="例如：首尔旅行金" autocomplete="off"></div><div class="ferr"></div></div>
       <div class="two"><div class="field" id="fTarget"><label for="aTarget">目标金额</label><div class="inp"><span>RM</span><input id="aTarget" type="number" inputmode="decimal" min="1" step="any" placeholder="10000"></div><div class="ferr"></div></div>
@@ -2646,7 +2754,7 @@ function openAdd(prefill,over){
     onMount:()=>{
       let G=null, gT=0;
       const TOUCH=new Set(); // 用户自己改过的栏位，重新估算时不盖掉
-      const moreLabel=()=>{ const b=$("#aMore"), open=!$("#aFields").hidden; b.setAttribute("aria-expanded",String(open));
+      const moreLabel=()=>{ const b=$("#aFold"), open=!$("#aFields").hidden; b.setAttribute("aria-expanded",String(open));
         b.textContent=open?"收起":G?(G.how.includes("请改成你的预算")?"改成你的预算":"修改金额和日期"):"自己填名称、金额和日期"; };
       const setMore=open=>{ $("#aFields").hidden=!open; moreLabel(); };
       const typeNow=()=>G?G.type:detectType($("#aName").value);
@@ -2681,7 +2789,7 @@ function openAdd(prefill,over){
         $("#aEst").innerHTML=`<div class="est"><dl><dt>识别目标</dt><dd><b>${icon(G.type)} ${TYPE_LABEL[G.type]}</b></dd><dt>怎么估</dt><dd class="guess">${esc(G.how)}</dd></dl>${ASK_TXT.test(txt)?`<p class="sub">这比较像一个问题。<button class="linkbtn" type="button" id="aToAsk">去问 Brader</button></p>`:""}</div>`;
         if($("#aToAsk")) $("#aToAsk").onclick=()=>{ closeSheet(); go("ask"); };
         ["#fText","#fName","#fTarget","#fSaved"].forEach(id=>fieldErr(id,"")); moreLabel(); calc(); };
-      $("#aMore").onclick=()=>setMore($("#aFields").hidden);
+      $("#aFold").onclick=()=>setMore($("#aFields").hidden);
       $("#aText").addEventListener("input",e=>{ fieldErr("#fText",""); if(e.isComposing) return; clearTimeout(gT); gT=setTimeout(()=>runGuess(),260); });
       $("#aText").addEventListener("compositionend",()=>{ clearTimeout(gT); gT=setTimeout(()=>runGuess(),120); });
       $("#aText").addEventListener("keydown",e=>{ if(e.key!=="Enter"||e.isComposing) return; e.preventDefault(); runGuess("go"); if(window.matchMedia&&matchMedia("(pointer:coarse)").matches) e.target.blur(); });
@@ -2700,10 +2808,7 @@ function openAdd(prefill,over){
           if($("#aFields").hidden&&!typed){ ["#fName","#fTarget","#fSaved"].forEach(id=>fieldErr(id,"")); fieldErr("#fText","先写一句你想完成的事"); $("#aText").focus(); return; }
           setMore(true); $(bad).focus(); return; }
         const saved=sv.v||0, type=typeNow();
-        const g=norm({id:uid(),type,text:G?G.src:"",name,target:t.v,deadline:$("#aDue").value,start:today(),startAmt:saved,saved,log:[],extra:G?G.extra:{},status:"active"});
-        GOALS.push(g); save(); closeSheet(); toast("目标已建立"); go("goal",g.id);
-        if(fxOn()) setTimeout(()=>burstAt(innerWidth/2,innerHeight*.3,80,10),220);
-        afterGoal(g); };
+        createGoal({type,text:G?G.src:"",name,target:t.v,deadline:$("#aDue").value,saved,extra:G?G.extra:{}}); };
       if(prefill) runGuess("reset");
       if(over&&G){ if(over.name) $("#aName").value=over.name; if(over.target>0){ G.target=Math.round(over.target/10)*10; $("#aTarget").value=G.target; }
         if(over.months>0) setDue(Math.max(1,Math.round(over.months))); if(over.saved>0) $("#aSaved").value=Math.round(over.saved);
@@ -3009,6 +3114,137 @@ async function initCloud(){
   }, ()=>{ clearTimeout(timer); CLOUD=null; CLOUD_STATE="offline"; softRender(); });
 }
 
+/* ================= 手机版：底部标签、一屏首页、存钱面板、分页 ================= */
+function renderTabs(){ const el=$("#tabbar"); if(!el) return;
+  document.documentElement.classList.toggle("pz-new",isPh()&&!GOALS.length&&!liveDebts().length&&VIEW.page==="overview");
+  if(!isPh()){ el.innerHTML=""; return; }
+  const cur=VIEW.page==="goal"||VIEW.page==="paused"?"goals":VIEW.page==="done"?"me":VIEW.page;
+  const item=(p,ic,l,dot)=>`<button class="pz-tab" type="button" data-tab="${p}"${cur===p?' aria-current="page"':""}>${svgI(ic)}<span>${l}</span>${dot?'<i class="pz-dot" aria-hidden="true"></i>':""}</button>`;
+  el.innerHTML=item("overview","home","首页")+item("goals","target","目标")+`<button class="pz-plus" type="button" id="tabPlus" aria-label="存钱"><span class="pz-pc">${svgI("plus")}</span><span>存钱</span></button>`+item("debt","debt","还债")+item("me","user","我的",keepRows().length>0);
+  el.querySelectorAll("[data-tab]").forEach(b=>b.onclick=()=>go(b.dataset.tab));
+  $("#tabPlus").onclick=openSave;
+}
+function pzTop(){ const g=VIEW.page==="goal"?GOALS.find(x=>x.id===VIEW.id):null, canBack=["goal","done","ask"].includes(VIEW.page);
+  $("#topbar").innerHTML=`${canBack?`<button class="btn ghost icon" type="button" id="topBack" aria-label="返回">${svgI("back")}</button>`:'<div class="mark" aria-hidden="true">B</div>'}
+    <div class="t">${g?esc(g.name):VIEW.page==="overview"?"首页":VIEW.page==="goals"||VIEW.page==="paused"?"目标":PAGE_NAME[VIEW.page]||"Brader"}</div>
+    ${VIEW.page==="ask"?"":`<button class="btn ghost icon" type="button" id="topAsk" aria-label="问 Brader">${svgI("chat")}</button>`}
+    ${g?"":`<button class="btn ghost icon" type="button" id="topEye" aria-label="遮住金额" aria-pressed="${HIDE}">${svgI(HIDE?"eyeoff":"eye")}</button>`}`;
+  const on=(id,f)=>{ const el=$(id); if(el) el.onclick=f; };
+  on("#topBack",()=>{ if(VIEW.page==="goal"){ const x=GOALS.find(y=>y.id===VIEW.id); PZSEG=x&&x.status==="paused"?"paused":x&&x.status==="done"?"done":"active"; go("goals"); } else if(VIEW.page==="done") go("me"); else go(PZPREV&&PZPREV!=="ask"?PZPREV:"overview"); });
+  on("#topAsk",()=>go("ask")); on("#topEye",()=>setHide(!HIDE));
+}
+// 这个月这个目标还要存多少（和「这个月要做的事」同一个算法）
+function monthNeed(g,s){ if(g.saved>=g.target||s.left<=0) return {need:0,got:0,rest:0}; const got=monthIn(g), need=Math.round(s.budget||pmtFor(g.target,Math.max(0,g.saved-got),s.r,Math.max(1,s.left))); return {need,got,rest:Math.max(0,need-got)}; }
+function saveTarget(){ const act=activeSorted().filter(g=>g.saved<g.target); if(!act.length) return null;
+  const ef=act.find(g=>g.type==="emergency"); if(ef) return ef;
+  return act.map(g=>({g,r:monthNeed(g,stat(g)).rest})).sort((a,b)=>b.r-a.r)[0].g; }
+function openSave(){ const g=saveTarget(); if(g) openQuick(g,{pick:true}); else openAdd(""); }
+function openGoalPick(cur){ const L=activeSorted().filter(g=>g.saved<g.target);
+  modal({title:"存进哪一个目标？",body:`<div class="pz-list">${L.map(g=>{ const s=stat(g); return `<button class="pz-li" type="button" data-pick="${g.id}"${g.id===cur?' aria-current="true"':""}><span class="gic" aria-hidden="true">${icon(g.type)}</span><span class="pz-lt"><b>${esc(g.name)}</b><small>${Math.round(s.pct*100)}% · 这个月还要存 ${rm(monthNeed(g,s).rest)}</small></span>${g.id===cur?svgI("check"):""}</button>`; }).join("")}</div>`,
+    onMount:()=>$("#sheetRoot").querySelectorAll("[data-pick]").forEach(b=>b.onclick=()=>openQuick(GOALS.find(x=>x.id===b.dataset.pick),{pick:true}))});
+}
+function renderHomePh(c){ const {act,stats,ns,hasEF,efOpen,pctAll,flowCard,health,far,surplus}=c; let F;
+  const live=stats.filter(x=>x.g.saved<x.g.target), H=hiDebts();
+  if(!hasEF) F={l:"你的第一步",big:"救命的钱",s:"先存够几个月的开销，其他目标才稳。",b:"建立救命的钱",f:()=>openAdd("存够救命的钱"),txt:1};
+  else if(efOpen){ const s=stat(efOpen), r=monthNeed(efOpen,s); F={l:r.rest>0?"这个月先存":"这个月的救命钱存好了",n:r.rest>0?r.rest:r.need,s:`「${esc(efOpen.name)}」还差 ${rm(efOpen.target-efOpen.saved)}`,b:"存钱",f:()=>openQuick(efOpen,{pick:true})}; }
+  else if(H.length){ const p=planDebt(), pay=p.each.reduce((a,x)=>a+(x.first||0),0); F={l:"这个月要还",n:pay,s:`先还「${esc(H[0].name)}」${p.done?` · 预计 ${ymLabel(addMonthsYM(p.months))} 还清`:""}`,b:"更新账单",f:openDebtUpdate}; }
+  else if(live.length){ const R=live.map(x=>monthNeed(x.g,x.s)), rest=R.reduce((a,x)=>a+x.rest,0), need=R.reduce((a,x)=>a+x.need,0); F={l:rest>0?"这个月还要存":"这个月都存好了",n:rest>0?rest:need,s:rest>0?`${live.length} 个目标 · 每天约 ${dayRM(rest)}`:"下个月发薪水再存。",b:"存钱",f:openSave}; }
+  else if(act.length) F={l:"所有目标",big:"金额都够了",s:"去目标页面按「标记完成」，收下奖杯。",b:"看目标",f:()=>go("goals"),txt:1};
+  else F={l:"现在",big:"没有进行中的目标",s:"写一句你想完成的事，马上算给你看。",b:"新目标",f:()=>openAdd(""),txt:1};
+  const hc=S.income>0?Math.round(S.expense/S.income*100):null, tm=act.length?tmHTML(stats):"";
+  const tile=(k,ic,t,d)=>`<button class="pz-tile" type="button" data-pz="${k}">${svgI(ic)}<b>${t}</b><small>${d}</small></button>`;
+  $("#main").innerHTML=`<section class="card pz-hero" id="pzHero">${beamHTML()}${meteorsHTML(5)}
+      <div class="pz-hl"><span class="pz-l">${F.l}</span><b class="pz-big${F.txt?" tx":""}" id="pzBig">${F.txt?F.big:tk("pz-n",F.n)}</b><span class="pz-s">${F.s}</span></div>
+      <div class="ring pz-hr pz-fly">${rippleHTML}${gauge(pctAll,"ov-ring")}<div class="ring-c"><b>${tk("ov-pct",Math.round(pctAll*100),"pct")}</b><span>总进度</span></div></div>
+      <button class="btn pri lg pz-cta" type="button" id="pzCta">${F.b}</button></section>
+    <button class="next ${ns.tone} pz-next" type="button" id="nsBtn"><span class="t"><span class="ic">${svgI(ns.ic)}</span><span><span class="lbl">下一步</span><b>${ns.t}</b></span></span>${svgI("next")}</button>
+    <div class="pz-tiles">${tile("flow","chart","现金流",surplus==null?"还没填收入":"盈余 "+rm(surplus))}${tile("health","shield","健康检查",hc==null?"还没填收入":"开销 "+hc+"%")}${tm?tile("tm","clock","时光机","拖到未来"):""}</div>`;
+  $("#pzCta").onclick=F.f; $("#nsBtn").onclick=ns.f;
+  const open=k=>{ if(k==="health"&&!health){ openSpend(); return; }
+    const P={flow:["每月现金流",flowCard],health:["财务健康检查",health],tm:["时光机",tm]}[k];
+    modal({title:P[0],body:P[1],cls:"pz-panel",onMount:()=>{ const on=(id,f)=>{ const el=$(id); if(el) el.onclick=f; }; on("#ovSet",openProfile); on("#ovSpend",()=>openSpend()); on("#ovFar",()=>confirmPause(far)); if(k==="tm") bindTM(stats); runAnims($("#sheetRoot")); drawBeams(); }}); };
+  $("#main").querySelectorAll("[data-pz]").forEach(b=>b.onclick=()=>open(b.dataset.pz));
+}
+function renderWelcomePh(){
+  $("#main").innerHTML=`<section class="welcome pz-welcome"><div class="mark" aria-hidden="true">B${sparklesHTML(4)}</div><h1>你想完成什么？</h1><p class="lead">写一句话，马上算出每天要存多少。</p>
+    <div class="inp"><input id="wText" type="text" enterkeyhint="done" placeholder="例如：明年去首尔 6天5夜" autocomplete="off" aria-label="你想完成什么"></div>
+    <div class="chips" id="wChips" data-nomask>${["存够救命的钱","两年后买 MacBook Pro","明年去首尔 6天5夜 两个人","五年后买 RM550k 的房"].map(e=>`<button class="chip" type="button">${esc(e)}</button>`).join("")}</div>
+    <div id="wRes" aria-live="polite"></div>
+    ${IOS&&STANDALONE?`<div class="wmove"><b>刚从 Safari 过来？</b><span>把复制好的资料贴上，就能继续用。</span><button class="btn ghost sm" type="button" id="wMove">贴上资料</button></div>`:""}
+    <p class="wrest">不用注册，资料只存在你自己的设备。<br>已经有备份？<button class="linkbtn" type="button" id="wRestore">一键恢复</button>${PHONE&&!(IOS&&STANDALONE)?` · <button class="linkbtn" type="button" id="wPaste">贴上资料</button>`:""}</p>
+    <input id="wFile" type="file" accept="application/json,.json" hidden></section>`;
+  let t=0; const inp=$("#wText");
+  const show=()=>{ clearTimeout(t); if(!$("#wRes")) return; const txt=inp.value.trim(), box=$("#wRes"); $("#wChips").hidden=!!txt; if(txt.length<2){ box.innerHTML=""; return; }
+    if(DEBT_TXT.test(txt)){ box.innerHTML=`<div class="ares" id="aDebt"><span class="an">这是还债，不是存钱</span><b class="ad" style="font-size:20px">去还债计划排好顺序</b><button class="btn pri lg pz-cta" type="button" id="wDebt">去还债计划</button></div>`; $("#wDebt").onclick=()=>{ const pre={kind:debtKindOf(txt),bal:parseAmount(txt)||""}; go("debt"); openDebtForm(null,pre); }; return; }
+    const G=guess(txt), due=addMonthsYM(G.months), n=Math.max(1,monthsBetween(today(),deadlineDate(due))), O=OPTS[recommend(calMonths(today(),due),G.type)], m=pmtFor(G.target,0,mrate(O.r),n);
+    box.innerHTML=`<div class="ares" id="aHero"><span class="an">${esc(G.name)} · ${rm(G.target)} · ${ymLabel(due)}</span><b class="ad">每天存 ${dayRM(m)}</b><span class="am">每月 ${rm(m)} · 放 ${O.name}</span></div>
+      <button class="btn pri lg pz-cta" type="button" id="wCreate">建立目标</button><button class="linkbtn amore" type="button" id="wEdit">修改金额和日期</button>`;
+    $("#wCreate").onclick=()=>createGoal({type:G.type,text:txt,name:G.name,target:G.target,deadline:due,saved:0,extra:G.extra}); $("#wEdit").onclick=()=>openAdd(txt); };
+  inp.addEventListener("input",e=>{ if(e.isComposing) return; clearTimeout(t); t=setTimeout(show,260); });
+  inp.addEventListener("compositionend",()=>{ clearTimeout(t); t=setTimeout(show,120); });
+  inp.addEventListener("keydown",e=>{ if(e.key==="Enter"&&!e.isComposing){ e.preventDefault(); show(); inp.blur(); } });
+  $("#wChips").querySelectorAll(".chip").forEach(c=>c.onclick=()=>{ inp.value=c.textContent; show(); });
+  $("#wRestore").onclick=()=>$("#wFile").click(); $("#wFile").onchange=e=>restoreFile(e.target.files[0]);
+  ["#wMove","#wPaste"].forEach(id=>{ const b=$(id); if(b) b.onclick=pasteRestore; });
+}
+function renderGoalsPh(){ const L={active:activeSorted(),paused:GOALS.filter(g=>g.status==="paused"),done:GOALS.filter(g=>g.status==="done")}, cur=L[PZSEG]?PZSEG:"active", list=L[cur];
+  const row=g=>{ const s=stat(g), left=Math.max(0,g.target-g.saved), sub=cur==="active"?(left>0?`这个月还要存 ${rm(monthNeed(g,s).rest)} · 还差 ${rm(left)}`:"金额够了"):cur==="paused"?`${rm(g.saved)} / ${rm(g.target)}`:`${g.doneAt||""} 完成`;
+    return `<div class="pz-rw" data-id="${g.id}">${cur==="done"?"":`<button class="pz-act" type="button" ${cur==="active"?`data-pzpause="${g.id}">暂停`:`data-pzresume="${g.id}">恢复`}</button>`}
+      <div class="pz-row"><button class="pz-rm" type="button" data-open="${g.id}"><span class="ring pz-rr" data-fly="${g.id}">${gauge(s.pct,"pr-"+g.id)}<span class="ring-c"><b>${Math.round(s.pct*100)}%</b></span></span><span class="pz-lt"><b>${esc(g.name)}</b><small>${sub}</small></span></button>${cur==="active"&&left>0?`<button class="qadd" type="button" data-qadd="${g.id}" aria-label="存入「${esc(g.name)}」">${svgI("plus")}</button>`:""}</div></div>`; };
+  $("#main").innerHTML=`<div class="pz-gh"><div class="pz-seg" role="tablist" aria-label="目标状态">${[["active","进行中"],["paused","暂停"],["done","完成"]].map(([k,t])=>`<button type="button" role="tab" data-seg="${k}" aria-selected="${cur===k}">${t}${L[k].length?` ${L[k].length}`:""}</button>`).join("")}</div><button class="btn pri icon" type="button" id="gAdd" aria-label="新目标">${svgI("plus")}</button></div>
+    ${list.length?`<section class="card pz-rows">${list.map(row).join("")}</section>`:`<section class="card empty"><div class="big">${svgI(cur==="done"?"trophy":cur==="paused"?"pause":"target")}</div><h2>${cur==="done"?"第一个奖杯在等你":cur==="paused"?"没有暂停的目标":"还没有进行中的目标"}</h2><p>${cur==="active"?"写一句你想完成的事，系统会帮你算每个月要存多少。":cur==="paused"?"在目标上往左滑，就可以暂停。":"存够之后按「标记完成」，它就会出现在这里。"}</p></section>`}
+    ${cur==="active"&&list.length?'<p class="note pz-hint">往左滑可以暂停目标</p>':""}`;
+  $("#gAdd").onclick=()=>openAdd("");
+  $("#main").querySelectorAll("[data-seg]").forEach(b=>b.onclick=()=>{ PZSEG=b.dataset.seg; render(); });
+  $("#main").querySelectorAll("[data-open]").forEach(b=>b.onclick=()=>go("goal",b.dataset.open));
+  $("#main").querySelectorAll("[data-pzpause]").forEach(b=>b.onclick=()=>confirmPause(GOALS.find(x=>x.id===b.dataset.pzpause)));
+  $("#main").querySelectorAll("[data-pzresume]").forEach(b=>b.onclick=()=>resumeGoal(GOALS.find(x=>x.id===b.dataset.pzresume)));
+  bindQuick();
+  $("#main").querySelectorAll(".pz-rw").forEach(w=>{ if(!w.querySelector(".pz-act")) return; const r=w.querySelector(".pz-row"), W=84; let x0=0,y0=0,dx=0,base=0,drag=false;
+    r.addEventListener("touchstart",e=>{ x0=e.touches[0].clientX; y0=e.touches[0].clientY; dx=0; drag=false; base=w.classList.contains("open")?-W:0; r.style.transition="none"; },{passive:true});
+    r.addEventListener("touchmove",e=>{ dx=e.touches[0].clientX-x0; const dy=e.touches[0].clientY-y0; if(!drag&&Math.abs(dx)>10&&Math.abs(dx)>Math.abs(dy)) drag=true; if(drag) r.style.transform=`translateX(${Math.max(-W,Math.min(0,base+dx))}px)`; },{passive:true});
+    r.addEventListener("touchend",()=>{ r.style.transition=""; if(!drag){ r.style.transform=""; return; } const open=base+dx<-W/2; $("#main").querySelectorAll(".pz-rw.open").forEach(o=>{ if(o!==w){ o.classList.remove("open"); o.querySelector(".pz-row").style.transform=""; } }); w.classList.toggle("open",open); r.style.transform=open?`translateX(${-W}px)`:""; });
+    r.addEventListener("click",e=>{ if(w.classList.contains("open")){ e.preventDefault(); e.stopPropagation(); w.classList.remove("open"); r.style.transform=""; } },true); });
+}
+function pzGoal(g,s,left){ const M=$("#main"); M.classList.add("pz-goal"); if(PZT.id!==g.id) PZT={id:g.id,tab:"now"};
+  const hasTodo=!!M.querySelector("#todo"), T=[["now","这个月"],["plan","计划"],["log","记录"]];
+  [...M.children].forEach(el=>{ let k="now"; if(el.matches(".back,.phead,.kpis")) return; if(el.matches(".hero")) k=hasTodo?"plan":"now"; else if(el.matches('details[data-sec="plan"],details[data-sec="steps"]')) k="plan"; else if(el.matches('details[data-sec="chart"],details[data-sec="log"],.note')) k="log"; el.dataset.pzt=k; });
+  M.querySelectorAll("details.sec").forEach(d=>{ d.open=true; const su=d.querySelector("summary"); su.tabIndex=-1; su.addEventListener("click",e=>e.preventDefault()); });
+  const row=(k,el)=>{ if(!el) return; const d=document.createElement("div"); d.className="pz-gact"; d.dataset.pzt=k; d.appendChild(el); const first=M.querySelector(`[data-pzt="${k}"]`); first?first.before(d):M.appendChild(d); };
+  row("plan",$("#aEdit")); row("log",$("#aUpd"));
+  const more=M.querySelector(".more"); if(more) $("#topbar").appendChild(more);
+  const top=document.createElement("div"); top.className="pz-gtop";
+  top.innerHTML=`<div class="pz-gsum"><span class="ring pz-rr pz-fly">${gauge(s.pct,"gs-"+g.id)}<span class="ring-c"><b>${Math.round(s.pct*100)}%</b></span></span><span class="pz-lt"><b>${left>0?"还差 "+rm(left):"金额够了"}</b><small>截止 ${ymLabel(g.deadline)}</small></span><span class="pill ${s.st.c}">${s.st.t}</span></div>
+    <div class="pz-seg" role="tablist" aria-label="目标内容">${T.map(([k,t])=>`<button type="button" role="tab" data-pzg="${k}">${t}</button>`).join("")}</div>`;
+  M.prepend(top); top.querySelectorAll("[data-pzg]").forEach(b=>b.onclick=()=>pzTab(b.dataset.pzg)); pzTab(PZT.tab);
+  const all=$("#tdAll"); if(all) all.onclick=()=>{ pzTab("plan"); const d=M.querySelector('details[data-sec="steps"]'); if(d) d.scrollIntoView({block:"start"}); };
+}
+function pzTab(k){ PZT.tab=k; const M=$("#main"); M.querySelectorAll("[data-pzt]").forEach(el=>el.classList.toggle("pz-on",el.dataset.pzt===k)); M.querySelectorAll("[data-pzg]").forEach(b=>b.setAttribute("aria-selected",String(b.dataset.pzg===k))); drawBeams(); }
+// 目标详情左右滑换分页（滑杆、图表、里程碑上面不算）
+(()=>{ let x0=0,y0=0,skip=true; const M=$("#main");
+  M.addEventListener("touchstart",e=>{ skip=!M.classList.contains("pz-goal")||!!e.target.closest("input,textarea,select,.ms,.chart,.tscroll"); x0=e.touches[0].clientX; y0=e.touches[0].clientY; },{passive:true});
+  M.addEventListener("touchend",e=>{ if(skip) return; const t=e.changedTouches[0], dx=t.clientX-x0, dy=t.clientY-y0; if(Math.abs(dx)<70||Math.abs(dy)>50) return; const K=["now","plan","log"], i=K.indexOf(PZT.tab)+(dx<0?1:-1); if(K[i]) pzTab(K[i]); },{passive:true}); })();
+function renderMe(){ const rows=keepRows();
+  const li=(id,ic,t,d)=>`<button class="pz-li" type="button" id="${id}">${svgI(ic)}<span class="pz-lt"><b>${t}</b>${d?`<small>${d}</small>`:""}</span>${svgI("next")}</button>`;
+  const sw=(id,ic,t,on,st)=>`<button class="side-link fxsw pz-sw" type="button" id="${id}" role="switch" aria-checked="${on}">${svgI(ic)}<span>${t}${st?` <span class="st">${st}</span>`:""}</span><span class="sw" aria-hidden="true"></span></button>`;
+  const wins=(Array.isArray(S.debtWins)?S.debtWins.length:0)+GOALS.filter(g=>g.status==="done").length;
+  $("#main").innerHTML=`${rows.length?`<section class="card todo keep" id="keep"><div class="chead"><div><h2>留住你的计划</h2></div></div>${rows.join("")}</section>`:""}
+    <section class="card mt pz-list">${li("meWall","trophy","成就墙",wins?wins+" 个成就":"")}${li("meProfile","user","我的资料",S.income?"净收入 "+rm(S.income):"还没填")}${li("meSpend","chart","帮我算开销",S.expense?"每月 "+rm(S.expense):"")}${li("meBak","save","备份与恢复",S.lastBackup?"上次 "+S.lastBackup:"还没备份")}${li("meShare","share","分享给朋友")}</section>
+    <section class="card mt pz-list">${sw("meFx","spark","特效",FX,FX?"酷炫":"简洁")}${sw("meHide",HIDE?"eyeoff":"eye","遮住金额",HIDE)}${sw("meTheme",LIGHT?"sun":"moon","浅色主题",LIGHT)}</section>
+    <p class="note">回报率是假设情景，用来做规划，不是保证。${storageNote()}</p>`;
+  const on=(id,f)=>{ $(id).onclick=f; };
+  on("#meWall",()=>go("done")); on("#meProfile",openProfile); on("#meSpend",()=>openSpend()); on("#meBak",openBackup); on("#meShare",shareApp);
+  on("#meFx",()=>setFX(!FX,$("#meFx"))); on("#meHide",()=>setHide(!HIDE)); on("#meTheme",()=>setTheme(!LIGHT,$("#meTheme"))); bindKeep();
+}
+// 打开时弹出「留住你的计划」，看过之后隔 3 天再提醒
+function pzKeepPop(){ if(!isPh()) return; setTimeout(()=>{ if($("#shade")||!GOALS.length||VIEW.page!=="overview"||(OB.keepSnooze&&daysAgo(OB.keepSnooze)<3)) return; const rows=keepRows(); if(!rows.length) return; obSet("keepSnooze",today());
+  modal({title:"留住你的计划",sub:"几件小事，资料和习惯都不会丢。",body:`<div class="todo keep" id="keep">${rows.join("")}</div>`,foot:`<button class="btn ghost" type="button" id="kLater">等下</button>`,focus:"#kLater",onMount:()=>{ $("#kLater").onclick=closeSheet; bindKeep(); }}); },900); }
+// 手机上往下拉就关掉窗口
+function pzDrag(){ if(!isPh()) return; const m=$("#sheetRoot .modal"), b=$("#sheetRoot .mbody"); if(!m) return; let y0=0,dy=0,on=false;
+  m.addEventListener("touchstart",e=>{ const head=e.target.closest(".pz-grab,.mhead"), inBody=b&&b.contains(e.target)&&b.scrollTop<=0&&!e.target.closest("input,textarea,select,.tscroll"); if((!head&&!inBody)||e.target.closest("#xBtn")) return; on=true; y0=e.touches[0].clientY; dy=0; m.style.transition="none"; },{passive:true});
+  m.addEventListener("touchmove",e=>{ if(!on) return; dy=e.touches[0].clientY-y0; if(dy<0){ on=false; m.style.transform=""; return; } m.style.transform=`translateY(${dy}px)`; },{passive:true});
+  m.addEventListener("touchend",()=>{ if(!on) return; on=false; m.style.transition=""; if(dy>90) closeSheet(); else m.style.transform=""; }); }
+
 /* ================= 还债计划 =================
    顺序照理财九大阶梯：先存满救命的钱，再还清超过 8% 利息的债，从利息最高的开始。
    每月开销已经包含各笔月供，所以「多还的钱」就是每月盈余。计算假设利率不变、不再新增债务。 */
@@ -3080,6 +3316,14 @@ function renderDebt(){
   const loRow=d=>`<div class="td-row drow" data-debt="${d.id}"><span class="td-ic" aria-hidden="true">${svgI("clock")}</span><div class="td-main"><b>${esc(d.name)} <span class="pill paused">${d.rate}%</span></b><span class="d">还欠 ${rm(d.bal)} · 每月照常付 ${rm(d.min)}</span></div>
       <div class="dbtns"><button class="btn ghost sm" type="button" data-dedit="${d.id}">修改</button><button class="btn ghost sm" type="button" data-ddel="${d.id}">删除</button></div></div>`;
   const minSum=liveDebts().reduce((a,d)=>a+d.min,0), lowExp=S.income>0&&S.expense<minSum;
+  if(isPh()){ const top=hi[0], first=top&&each[top.id]?each[top.id].first||top.min:0, sh=(d,i)=>`<button class="pz-li drow" type="button" data-debt="${d.id}" data-dopen="${d.id}">${i!=null?`<span class="td-ic drank" aria-hidden="true">${i+1}</span>`:`<span class="td-ic" aria-hidden="true">${svgI("clock")}</span>`}<span class="pz-lt"><b>${esc(d.name)} <span class="pill ${i!=null?"warn":"paused"}">${d.rate}%</span></b><small>${i!=null&&each[d.id]&&each[d.id].n!=null?`预计 ${ymLabel(addMonthsYM(each[d.id].n))} 还清`:`每月 ${rm(d.min)}`}</small></span><b class="pz-amt">${rm(d.bal)}</b></button>`;
+    $("#main").innerHTML=(alerts[0]||"")+(top?`<section class="card pz-hero pz-dh" id="dHero"><div class="pz-hl"><span class="pz-l">现在先还</span><b class="pz-dn">${esc(top.name)} <span class="pill warn">${top.rate}%</span></b><span class="pz-l" style="margin-top:10px">这个月还</span><b class="pz-big" id="pzPay">${rm(first)}</b><span class="pz-s">${eta?`预计 ${ymLabel(eta)} 全部还清`:"照现在的还款还不清"} ${pace}</span>${save1?`<span class="pz-s">比只付最低还款省 ${rm(save1)} 利息</span>`:""}</div><button class="btn pri lg pz-cta" type="button" id="dUpd">更新账单</button></section>`
+      :`<section class="card" id="dHero"><p style="margin:0 0 12px">没有超过 ${DEBT_HI}% 利息的债。下面这些照常付月供就好，不用急着提前还。</p><button class="btn pri lg pz-cta" type="button" id="dUpd">更新账单</button></section>`)+
+      (hi.length?`<section class="card mt pz-list" id="dHi"><div class="chead"><div><h2>还款顺序</h2></div></div>${hi.map((d,i)=>sh(d,i)).join("")}</section>`:"")+
+      (lo.length?`<section class="card mt pz-list" id="dLo"><div class="chead"><div><h2>照常付月供</h2></div></div>${lo.map(d=>sh(d)).join("")}</section>`:"")+
+      `<button class="btn ghost lg pz-cta mt" type="button" id="dAdd">${svgI("plus")}新增一笔债</button>`+(paid.length?`<details class="sec mt" id="dPaid"><summary>已经还清<span class="hint">${paid.length} 笔</span></summary><div class="body">${paidHTML}</div></details>`:"")+
+      `<p class="note">${lowExp?`<span class="wn">你填的每月开销比这些月供（${rm(minSum)}）还少，记得把月供算进开销。</span> `:""}计算假设利率不变、不再新增债务，实际以银行账单为准。</p>`;
+    bindDebt(); return; }
   $("#main").innerHTML=head+alerts.join("")+hero+
     (hi.length?`<section class="card mt todo" id="dHi"><div class="chead"><div><h2>还款顺序</h2><p class="sub">利息最高的先还，其他的先付最低还款</p></div></div>${hi.map(row).join("")}</section>`:"")+
     (lo.length?`<section class="card mt todo" id="dLo"><div class="chead"><div><h2>照常付月供</h2><p class="sub">${DEBT_HI}% 或以下，不用急着提前还</p></div></div>${lo.map(loRow).join("")}</section>`:"")+paidHTML+
@@ -3090,9 +3334,11 @@ function bindDebt(){ const on=(id,f)=>{ const el=$(id); if(el) el.onclick=f; };
   on("#dAdd",()=>openDebtForm()); on("#dUpd",openDebtUpdate); on("#dUpd2",openDebtUpdate); on("#dSpend",()=>openSpend()); on("#dPause",pauseForDebt);
   on("#dEF",()=>{ const g=GOALS.find(x=>x.type==="emergency"&&x.status!=="paused"); if(g) go("goal",g.id); else openAdd("存够救命的钱"); });
   $("#main").querySelectorAll("[data-dedit]").forEach(b=>b.onclick=()=>openDebtForm(debtList().find(d=>d.id===b.dataset.dedit)));
-  $("#main").querySelectorAll("[data-ddel]").forEach(b=>b.onclick=()=>{ const d=debtList().find(x=>x.id===b.dataset.ddel); confirmBox({title:"删除这笔债？",text:`「${esc(d.name)}」`,sub:"这笔债和它的更新记录都会删除。",ok:"删除",danger:true,
-    onOk:()=>{ S.debts=debtList().filter(x=>x.id!==d.id); if(S.debts.length) syncDebtM(); else { delete S.debts; delete S.debtBase; delete S.debtUpd; S.debt=0; } if(S.debts) rebaseDebt(); save(); toast("已删除「"+d.name+"」"); render(); }}); });
+  $("#main").querySelectorAll("[data-dopen]").forEach(b=>b.onclick=()=>{ const d=debtList().find(x=>x.id===b.dataset.dopen); modal({title:esc(d.name),sub:`一年利率 ${d.rate}%`,body:`<div class="est"><dl><dt>还欠</dt><dd><b>${rm(d.bal)}</b></dd><dt>每月还款</dt><dd>${rm(d.min)}</dd><dt>开始</dt><dd>${d.start}</dd></dl></div>`,foot:`<button class="btn ghost" type="button" id="dmDel">删除</button><button class="btn pri" type="button" id="dmEdit">修改</button>`,onMount:()=>{ $("#dmEdit").onclick=()=>openDebtForm(d); $("#dmDel").onclick=()=>delDebt(d); }}); });
+  $("#main").querySelectorAll("[data-ddel]").forEach(b=>b.onclick=()=>delDebt(debtList().find(x=>x.id===b.dataset.ddel)));
 }
+function delDebt(d){ confirmBox({title:"删除这笔债？",text:`「${esc(d.name)}」`,sub:"这笔债和它的更新记录都会删除。",ok:"删除",danger:true,
+    onOk:()=>{ S.debts=debtList().filter(x=>x.id!==d.id); if(S.debts.length) syncDebtM(); else { delete S.debts; delete S.debtBase; delete S.debtUpd; S.debt=0; } if(S.debts) rebaseDebt(); save(); toast("已删除「"+d.name+"」"); render(); }}); }
 function pauseForDebt(){ const L=otherGoalsList(); if(!L.length) return; const snap=snapState(), view={page:VIEW.page,id:VIEW.id};
   L.forEach(g=>{ g.status="paused"; g.pausedAt=today(); g.pausedBy="debt"; }); rebaseDebt(); save(); render(); offerUndo(`已暂停 ${L.length} 个目标，先还债`,snap,view); }
 function openDebtForm(d,pre){ pre=pre||{}; const kind=d?d.kind:pre.kind||"card", K=DEBT_KINDS[kind];
@@ -3191,7 +3437,7 @@ const IOS=/iPhone|iPad|iPod/.test(UA)||(navigator.platform==="MacIntel"&&navigat
 const ANDROID=/Android/i.test(UA), PHONE=IOS||ANDROID;
 const STANDALONE=navigator.standalone===true||!!(window.matchMedia&&matchMedia("(display-mode: standalone)").matches);
 const INAPP=/FBAN|FBAV|FB_IAB|Instagram|\bLine\/|MicroMessenger|XiaoHongShu|xhsdiscover|TikTok|musical_ly|BytedanceWebview/i.test(UA);
-Object.assign(IC,{debt:'<rect x="2" y="5" width="20" height="14" rx="2.5"/><path d="M2 10h20M6 15h4"/>',share:'<circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.6 13.5 6.8 4M15.4 6.5l-6.8 4"/>',
+Object.assign(IC,{next:'<path d="M9 18l6-6-6-6"/>',chart:'<path d="M4 20V10M10 20V4M16 20v-7M21 20H3"/>',debt:'<rect x="2" y="5" width="20" height="14" rx="2.5"/><path d="M2 10h20M6 15h4"/>',share:'<circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.6 13.5 6.8 4M15.4 6.5l-6.8 4"/>',
   cal:'<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/>',phone:'<rect x="6" y="2" width="12" height="20" rx="2.5"/><path d="M11 18h2"/>'});
 // 这些小记号只存在这台设备，不放进备份
 const OBKEY="brader-ob";
@@ -3227,8 +3473,8 @@ function showEase(g){
 }
 
 /* 留住你的计划：发薪日提醒、主屏幕、备份 */
-function keepHTML(){
-  if(!GOALS.length) return "";
+function keepRows(){
+  if(!GOALS.length) return [];
   const row=(id,ic,t,d,b,pri)=>`<div class="td-row"><span class="td-ic" aria-hidden="true">${svgI(ic)}</span><div class="td-main"><b>${t}</b><span class="d">${d}</span></div><button class="btn ${pri?"pri":"ghost"} sm" type="button" id="${id}">${b}</button></div>`;
   let rows=[];
   if(!OB.keepOff){
@@ -3238,7 +3484,8 @@ function keepHTML(){
   }
   if(S.spend&&S.spend.d&&daysAgo(S.spend.d)>=90) rows.push(row("kSpend","clock","开销 3 个月没复查了","花费有变的话，每月能存多少也会变。","复查"));
   if(needBackup()) rows.push(row("kBak","save","有新资料还没备份","下载一份，换手机或资料不见时可以一键恢复。","下载"));
-  rows=rows.filter(Boolean); if(!rows.length) return "";
+  return rows.filter(Boolean); }
+function keepHTML(){ if(isPh()) return ""; const rows=keepRows(); if(!rows.length) return "";
   return `<section class="card mt todo keep" id="keep"><div class="chead"><div><h2>留住你的计划</h2></div><button class="kx" type="button" id="kOff" aria-label="先不用">×</button></div>${rows.join("")}</section>`;
 }
 function bindKeep(){ const on=(id,f)=>{ const el=$(id); if(el) el.onclick=f; };
@@ -3347,9 +3594,11 @@ applyTheme(); applyHide(); applyFX(); particles(); lightRays();
 if(REDUCE.addEventListener) REDUCE.addEventListener("change",()=>{ applyFX(); particles(); render(); });
 $("#scrim").onclick=()=>setDrawer(false);
 if(window.matchMedia) matchMedia("(min-width:961px)").addEventListener("change",e=>{ if(e.matches&&DRAWER) setDrawer(false); });
+if(PHQ.addEventListener) PHQ.addEventListener("change",()=>{ applyPh(); closeSheet(); ENTER=true; render(); });
 render();
 initCloud();
 watchFX();
+pzKeepPop();
 })();
 </script>
 </body>
