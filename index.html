@@ -12,6 +12,16 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Brader 财务目标">
+<meta property="og:title" content="Brader 财务目标：写下目标，马上知道每天要存多少">
+<meta property="og:description" content="免费使用，不用注册，资料只存在你自己的设备。">
+<meta property="og:url" content="https://derektan0819.github.io/brader/">
+<meta property="og:image" content="https://derektan0819.github.io/brader/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Brader 财务目标：写下目标，马上知道每天要存多少">
+<meta name="twitter:card" content="summary_large_image">
 <title>Brader 财务目标</title>
 <style>
 /* Minimal Futuristic Financial Dashboard.
@@ -1116,6 +1126,27 @@ html.phone.fx .shade.closing .modal.pz-morph{animation:pzmorphout .23s ease-in f
 .pz-coin{position:fixed;left:0;top:0;z-index:46;display:grid;place-items:center;width:30px;height:30px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#FFE9A8,#F5B544 62%,#C98A1E);box-shadow:0 0 14px rgba(245,181,68,.75);color:#5B3A00;font:800 10px/1 var(--f-num);font-style:normal;pointer-events:none;will-change:transform,opacity}
 @media (max-height:640px){.pz-hold{width:84px;height:84px}.pz-hc{font-size:15px}.pz-sel>b{font-size:22px}}
 @media (prefers-reduced-motion:reduce){html.phone .pz-pressed{transform:none}}
+.pz-tile.over{border-color:var(--warn)}
+.pz-tile.over small{color:var(--warn);font-weight:600}
+.ares .ah{display:block;margin-top:8px;padding-top:8px;border-top:1px solid var(--line);font-size:12.5px;line-height:1.55;color:var(--muted)}
+.ares .ah b{color:var(--ink2);font-weight:600}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+/* 手机上的按钮至少 44px，手指才按得准 */
+html.phone .qadd{position:relative}
+html.phone .qadd::after{content:"";position:absolute;inset:-4px}
+html.phone .btn.sm{min-height:44px;min-width:44px}
+html.phone .modal .x{width:44px;height:44px}
+html.phone .chip,html.phone .qcats .chip{min-height:44px}
+html.phone .linkbtn{position:relative}
+html.phone .linkbtn::after{content:"";position:absolute;inset:-12px -15px}
+html.phone .ms-node::after{content:"";position:absolute;inset:-15px}
+html.phone .topbar .btn.icon{width:44px;min-height:44px;height:44px}
+html.phone .pz-seg button,html.phone .seg button{min-height:44px}
+html.phone .qitem{padding-top:11.5px;padding-bottom:11.5px}
+html.phone .log .del{width:44px;height:44px}
+html.phone .inp input,html.phone .inp select{min-height:44px}
+html.phone .steps li{position:relative}
+html.phone .steps label::before{content:"";position:absolute;inset:0}
 </style>
 <script>try{if(localStorage.getItem("brader-theme")==="light"){document.documentElement.classList.add("light");var tc=document.querySelector('meta[name="theme-color"]');if(tc)tc.setAttribute("content","#F3F5FA")}}catch(e){}</script>
 </head>
@@ -1382,7 +1413,7 @@ const DEBT_TXT=/卡债|信用卡|credit card|还债|欠债|欠钱|欠银行|还�
 const debtKindOf=t=>/ptptn|学贷/i.test(t)?"ptptn":/personal loan|私人贷款/i.test(t)?"pl":/bnpl|spaylater|atome|分期付款/i.test(t)?"bnpl":/车贷/.test(t)?"car":/房贷/.test(t)?"house":/卡债|信用卡|credit card/i.test(t)?"card":"other";
 const TYPE_LABEL={travel:"旅行",gadget:"买东西",car:"买车",house:"买房",wedding:"结婚",retire:"退休",education:"孩子教育",renovation:"装修",emergency:"救命的钱",other:"目标"};
 function guess(text){
-  const t=text.trim(), type=detectType(t), amt=parseAmount(t); let months=parseMonths(t); let name,base,how,extra={};
+  const t=text.trim(), type=detectType(t), amt=parseAmount(t); let months=parseMonths(t); let name,base,how,extra={},rough=false;
   const inf=m=>Math.pow(1+INFL,Math.max(0,m)/12);
   switch(type){
     case "travel":{ const D=DEST.find(x=>x.re.test(t))||{name:"旅行",flight:1500,hotel:350,daily:250}; const {days,nights}=parseDays(t), pax=parsePeople(t), rooms=Math.ceil(pax/2);
@@ -1408,9 +1439,9 @@ function guess(text){
       name=al?al[1]:t.replace(/^(我)?(想|要|打算|计划)?(在)?/,"").slice(0,16)||"新目标";
       if(age&&+age[1]>A) months=months||(+age[1]-A)*12;
       if(per&&amt){ if(months===1&&/一个月/.test(t)) months=12; months=months||12; base=amt*months; how=`每月 ${rm(amt)} × ${months} 个月`; if(!al) name="每月存 "+rmRaw(amt); break; }
-      months=months||(amt>=50000?60:amt>=20000?36:12); base=amt||10000; how=amt?"用你写的金额":"先估 RM10,000，请改成你的预算"; }
+      months=months||(amt>=50000?60:amt>=20000?36:12); base=amt||10000; how=amt?"用你写的金额":"还不知道金额，请填你的预算"; rough=!amt; }
   }
-  return {type,name,target:Math.round(base/10)*10,months,how,extra};
+  return {type,name,target:Math.round(base/10)*10,months,how,extra,rough};
 }
 
 /* ================= storage ================= */
@@ -1464,6 +1495,9 @@ function stat(g){
   const ds=daysSinceUpdate(g), stale=g.status==="active"&&ds>35?ds:0;
   return {total,left,elapsed,key,O,r,plan,expected,monthly,pct,expPct,st,budget,finishN,earn,stale};
 }
+// 过期但还没存够的目标：要先设新日期，所以不算进每月要存的钱
+const isExp=(g,s)=>g.status==="active"&&g.saved<g.target&&s.left<=0;
+const planM=(g,s)=>isExp(g,s)?0:(s.budget||s.monthly);
 function actualSeries(g){
   const pts=[{t:0,v:g.startAmt}]; let v=g.startAmt;
   const logs=g.log.filter(l=>!l.base).sort((a,b)=>a.d.localeCompare(b.d));
@@ -1524,7 +1558,7 @@ function stepsFor(g,s){
   const L=[], O=s.O;
   if(g.type!=="emergency") L.push({k:"ef",h:"先留好救命的钱",d:`${efMonths(S)} 个月的开销：一个月放 savings account，其余放 MMF。这是理财九大阶梯的第一步，还没存够之前，投资、买房买车都先放一边，不然一生病、车坏，就要在亏损的时候被逼卖掉投资。`});
   L.push({k:"acct",h:`另外开一个户口，叫「${g.name}」`,d:"Brader 的做法：有三个目标，就把储蓄分三份，各自买不同的产品。分开放，这笔钱就只做这一件事。"});
-  L.push({k:"auto",h:`每个月发薪水那天，自动转 ${rm(s.budget||s.monthly)}`,d:"先付钱给未来的自己：一拿到薪水马上先存，剩下的钱才去分配固定开销和娱乐。投资最难的不是选对哪一支 ETF，而是坚持，手动做两三个月就会停，所以要 set 成自动。"});
+  L.push({k:"auto",h:`每个月发薪水那天，自动转 ${isExp(g,s)?"一笔钱":rm(planM(g,s))}`,d:"先付钱给未来的自己：一拿到薪水马上先存，剩下的钱才去分配固定开销和娱乐。投资最难的不是选对哪一支 ETF，而是坚持，手动做两三个月就会停，所以要 set 成自动。"});
   O.how.forEach((h,i)=>L.push({k:"o_"+s.key+"_"+i,h,d:i===0?O.what:""}));
   const t=g.type, e=g.extra||{};
   const I=S.income||0, D=S.debt||0, yn=ok=>ok?"符合":"超过";
@@ -1875,11 +1909,12 @@ function renderOverview(){
   }
   const stats=act.map(g=>({g,s:stat(g)}));
   const saved=act.reduce((a,g)=>a+Math.min(g.saved,g.target),0), target=act.reduce((a,g)=>a+g.target,0);
-  const monthly=stats.reduce((a,x)=>a+(x.s.budget||x.s.monthly),0);
+  const monthly=stats.reduce((a,x)=>a+planM(x.g,x.s),0);
   const surplus=S.income?S.income-S.expense:null;
+  const planS=stats.filter(x=>!isExp(x.g,x.s)), overBy=surplus!=null&&monthly>surplus?monthly-surplus:0;
   const hasEF=GOALS.some(g=>g.type==="emergency"&&g.status!=="paused");
   const efOpen=hasEF&&!efFull()?GOALS.find(g=>g.type==="emergency"&&g.status!=="paused"):null;
-  const nonEF=act.filter(g=>g.type!=="emergency");
+  const nonEF=act.filter(g=>g.type!=="emergency"&&!isExp(g,stat(g)));
   const far=surplus>0&&monthly>surplus&&nonEF.length>=2?nonEF.slice().sort((a,b)=>b.deadline.localeCompare(a.deadline))[0]:null;
   const bkDays=S.lastBackup?daysAgo(S.lastBackup):null, bkWarn=GOALS.length>0&&(bkDays==null||bkDays>30);
   const bkTxt=bkDays==null?"还没备份过。":bkDays<=0?"今天备份过。":`上次备份 ${bkDays} 天前。`;
@@ -1893,7 +1928,7 @@ function renderOverview(){
   let near=null; stats.forEach(x=>{ const w=nextWp(x.g); if(w&&(!near||w.gap<near.w.gap)) near={g:x.g,w}; });
   const heroLine=!act.length?"没有进行中的目标。暂停的在「暂停中的目标」，完成的在「成就墙」。"
     :remain<=0?"所有进行中的目标，金额都够了。去目标页面按「标记完成」，收下奖杯。"
-    :`所有目标合计还差 <b>${rm(remain)}</b>。${live.length?`每天存 <b class="cy hlt">${dayRM(need)}</b>，就能全部准时抵达${earn>=1?`，其中 <b class="gd">${rm(earn)}</b> 由复利帮你出`:""}。`:""}${expiredGoals.length?` <span class="wn">另有 ${expiredGoals.length} 个目标已经到期，要重新设日期。</span>`:""}`;
+    :`所有目标合计还差 <b>${rm(remain)}</b>。${live.length?`每天存 <b class="cy hlt">${dayRM(need)}</b>，就能全部准时抵达${earn>=1?`，其中 <b class="gd">${rm(earn)}</b> 由复利帮你出`:""}。`:""}${expiredGoals.length?` <span class="wn">另有 ${expiredGoals.length} 个目标已经到期，要重新设日期。</span>`:""}${overBy>0?` <span class="wn">每月要存的钱超出盈余 ${rm(overBy)}。</span>`:""}`;
   // 下一步：one clear action, most important first
   const worst=stats.filter(x=>x.s.left>0&&(x.s.st.c==="bad"||x.s.st.c==="warn")).sort((a,b)=>(b.s.expected-b.g.saved)-(a.s.expected-a.g.saved))[0];
   const stale=stats.filter(x=>x.s.stale).sort((a,b)=>b.s.stale-a.s.stale)[0];
@@ -1916,10 +1951,11 @@ function renderOverview(){
     const base=Math.max(surplus,monthly,1), use=surplus>0?Math.round(monthly/surplus*100):null;
     flow=`<div class="flowhead"><div><span class="l">每月盈余</span><b>${tk("ov-sur",surplus)}</b></div><div class="r"><span class="l">目标用掉</span><b class="${use!=null&&use<=100?"gd":"wn"}">${use==null?"—":tk("ov-use",use,"pct")}</b></div></div>
       <p class="sub">净收入 ${rm(S.income)} − 开销 ${rm(S.expense)} · <button class="linkbtn" type="button" id="ovSpend">帮我算开销</button></p>
-      ${flowBeamHTML(stats,surplus,monthly)}
-      <div class="alloc">${stats.map((x,i)=>`<span title="${esc(x.g.name)}" style="width:${((x.s.budget||x.s.monthly)/base*100).toFixed(2)}%;background:${PALETTE[i%PALETTE.length]}"></span>`).join("")}</div>
-      <div class="allocleg">${stats.map((x,i)=>`<span><i style="background:${PALETTE[i%PALETTE.length]}"></i>${esc(x.g.name)} ${rm(x.s.budget||x.s.monthly)}</span>`).join("")}</div>
-      <p class="say">${surplus<=0?"每个月花的比赚的多，现金流是 negative。要省，先 cut 最大的开销（房子、车的 installment），大开销都 cut 完还不够，才 cut 咖啡。":monthly<=surplus?`所有目标每月 ${rm(monthly)}，还剩 ${rm(surplus-monthly)} 可以放进长期投资。`:`所有目标每月要 ${rm(monthly)}，超出盈余 ${rm(monthly-surplus)}。目标太多，有些可以延迟甚至取消；或者想办法提高收入：Cut 消费是有极限的，但是提高收入却没有极限。${far?` 建议先延后「${esc(far.name)}」（期限最远）。 <button class="linkbtn" type="button" id="ovFar">暂停这个目标</button>`:""}`}</p>`;
+      ${flowBeamHTML(planS,surplus,monthly)}
+      <div class="alloc">${planS.map((x,i)=>`<span title="${esc(x.g.name)}" style="width:${((x.s.budget||x.s.monthly)/base*100).toFixed(2)}%;background:${PALETTE[i%PALETTE.length]}"></span>`).join("")}</div>
+      <div class="allocleg">${planS.map((x,i)=>`<span><i style="background:${PALETTE[i%PALETTE.length]}"></i>${esc(x.g.name)} ${rm(x.s.budget||x.s.monthly)}</span>`).join("")}</div>
+      <p class="say">${surplus<=0?"每个月花的比赚的多，现金流是 negative。要省，先 cut 最大的开销（房子、车的 installment），大开销都 cut 完还不够，才 cut 咖啡。":monthly<=surplus?`所有目标每月 ${rm(monthly)}，还剩 ${rm(surplus-monthly)} 可以放进长期投资。`:`所有目标每月要 ${rm(monthly)}，超出盈余 ${rm(monthly-surplus)}。目标太多，有些可以延迟甚至取消；或者想办法提高收入：Cut 消费是有极限的，但是提高收入却没有极限。${far?` 建议先延后「${esc(far.name)}」（期限最远）。 <button class="linkbtn" type="button" id="ovFar">暂停这个目标</button>`:""}`}</p>
+      ${expiredGoals.length?`<p class="say">${expiredGoals.length===1?`「${esc(expiredGoals[0].g.name)}」`:`${expiredGoals.length} 个目标`}已经到期，没有算在上面。设新日期后，才会重新算每月要存多少。 <button class="linkbtn" type="button" id="ovExp">设新日期</button></p>`:""}`;
   }
   // 财务健康检查（Brader）：开销 ≤ 85%、DSR ≤ 35%、救命的钱够几个月、储蓄率 ≥ 20%
   let health="";
@@ -1940,7 +1976,7 @@ function renderOverview(){
       <div class="tiles">${tiles.map(x=>`<div class="tile"><div class="l">${x.c?`<span class="dot ${x.c}"></span>`:""}${x.l}</div><div class="v" style="color:${x.c?`var(--${x.c})`:"var(--muted)"}">${x.v}</div><div class="s">${x.s}</div></div>`).join("")}</div></section>`;
   }
   const flowCard=`<section class="card"><div class="chead"><div><h2>每月现金流分配</h2></div></div>${flow}</section>`;
-  if(isPh()){ renderHomePh({act,stats,ns,hasEF,efOpen,pctAll,flowCard,health,far,surplus}); return; }
+  if(isPh()){ renderHomePh({act,stats,ns,hasEF,efOpen,pctAll,flowCard,health,far,surplus,overBy}); return; }
   $("#main").innerHTML=`
     <div class="phead"><div><h1>总览</h1><div class="meta"><span>${new Date().getFullYear()}年${new Date().getMonth()+1}月${new Date().getDate()}日</span><span>${act.length} 个目标进行中</span></div></div></div>
     <div class="next ${ns.tone}">${beamHTML(true)}<div class="t"><span class="ic">${svgI(ns.ic)}</span><div><span class="lbl">下一步</span><b>${ns.t}</b><span>${ns.d}</span></div></div><button class="btn ${ns.tone==="ok"?"ghost":"pri"} sm" type="button" id="nsBtn">${ns.b}</button></div>
@@ -1966,7 +2002,7 @@ function renderOverview(){
   bindQuick(); bindTM(stats); bindKeep();
   const on=(id,f)=>{ const el=$(id); if(el) el.onclick=f; };
   on("#ovAll",()=>go("goals")); on("#ovSet",openProfile); on("#ovSpend",()=>openSpend()); on("#ovBak",openBackup); on("#ovAsk",()=>go("ask"));
-  on("#ovFar",()=>confirmPause(far));
+  on("#ovFar",()=>confirmPause(far)); on("#ovExp",()=>openEdit(expiredGoals[0].g));
 }
 
 /* ================= 我的目标 ================= */
@@ -1980,7 +2016,7 @@ function renderGoals(){
       return `<div class="gcwrap" data-id="${g.id}"><button class="card gcard tilt" type="button" data-id="${g.id}">${glareHTML}
         <span class="top"><span class="gic" aria-hidden="true">${icon(g.type)}</span><span style="min-width:0;flex:1"><span class="gname">${esc(g.name)}</span><small>${TYPE_LABEL[g.type]} · 截止 ${ymLabel(g.deadline)}</small></span></span>
         <span class="mid"><span class="ring sm">${gauge(s.pct,"gc-"+g.id)}<span class="ring-c"><b>${Math.round(s.pct*100)}%</b></span></span>
-          <span class="kv"><span class="k">已存</span><span class="v">${rm(g.saved)}</span><span class="k">还差</span><span class="v cy">${left>0?rm(left):"金额够了"}</span><span class="k">每月</span><span class="v">${rm(s.budget||s.monthly)}</span></span></span>
+          <span class="kv"><span class="k">已存</span><span class="v">${rm(g.saved)}</span><span class="k">还差</span><span class="v cy">${left>0?rm(left):"金额够了"}</span><span class="k">每月</span><span class="v">${isExp(g,s)?'<span class="wn">已到期</span>':rm(s.budget||s.monthly)}</span></span></span>
         <span class="gcfoot"><span class="pill ${s.st.c}">${s.st.t}</span>${s.stale?` <span class="warnline">${s.stale} 天没更新</span>`:""}</span></button>${qaddBtn(g,true)}</div>`; }).join("")}
       <button class="card gcard add" type="button" id="gAdd2">${svgI("plus")}新目标</button></div>`
     :`<section class="card empty"><div class="big">${svgI("target")}</div><h2>还没有进行中的目标</h2><p>写一句你想完成的事，系统会帮你算每个月要存多少。</p><p><button class="btn pri" type="button" id="gAdd3">${svgI("plus")}新目标</button></p></section>`}`;
@@ -1995,7 +2031,7 @@ const pctOf=(g,v)=>v>=g.target?100:Math.max(0,Math.min(99,Math.floor(v/Math.max(
 const pctStep=(g,v)=>{ const a=pctOf(g,v); if(a!==pctOf(g,g.saved)) return a; return String(Math.min(99.9,Math.floor(v/Math.max(1,g.target)*1000)/10)); };
 function bindQuick(){ $("#main").querySelectorAll("[data-qadd]").forEach(b=>b.onclick=e=>{ e.stopPropagation(); const g=GOALS.find(x=>x.id===b.dataset.qadd); if(g) openQuick(g); }); }
 function openQuick(g,opt){ const ph=isPh(), pick=!!(opt&&opt.pick)&&activeSorted().filter(x=>x.saved<x.target).length>1;
-  const s=stat(g), base=Math.round(s.budget||s.monthly), left=Math.ceil(Math.max(0,g.target-g.saved));
+  const s=stat(g), base=Math.round(planM(g,s)), left=Math.ceil(Math.max(0,g.target-g.saved));
   const A=[50,100,500].map(v=>({v,top:v===base?"本月建议":ph?"金额":"存入",l:rmRaw(v),raw:1}));
   if(base>0&&![50,100,500].includes(base)) A.push({v:base,top:"本月建议",l:rm(base)});
   if(left>0&&(left<=1000||(ph&&left<base))&&!A.some(a=>a.v===left)) A.push({v:left,top:"存满它",l:rm(left)});
@@ -2034,7 +2070,7 @@ function bump(el){ if(!el) return; el.classList.remove("bump"); void el.offsetWi
 function quickDeposit(g,v,from){
   if(!(v>0)) return;
   const snap=snapState(), view={page:VIEW.page,id:VIEW.id}, wps=wpsOf(g), wpN=x=>wps.filter(w=>x>=g.target*w.f-.5).length, wb=wpN(g.saved), s0=g.saved;
-  g.log.push({id:uid(),d:today(),a:v,k:"add",n:""}); recomputeSaved(g); save();
+  g.log.push({id:uid(),d:today(),a:v,k:"add",n:""}); recomputeSaved(g); save(); askSafe();
   closeSheet();
   const id=g.id, done=g.saved>=g.target&&g.status==="active", hit=!done&&wpN(g.saved)>wb?wps[wpN(g.saved)-1]:null;
   const land=quiet=>{
@@ -2065,7 +2101,7 @@ function flyAmount(text,from,toEl,cb){
 let TMN=null, TMRAF=0;
 // fin = months from now until the goal is fully saved. Following the plan (no own monthly amount) it lands on the deadline;
 // with an own amount, or when interest alone gets there, count the months like the goal page does.
-function tmPlans(stats){ return stats.map(({g,s})=>{ const base=s.budget||s.monthly; let fin, lbl;
+function tmPlans(stats){ return stats.map(({g,s})=>{ const base=planM(g,s); let fin, lbl;
   if(g.saved>=g.target) fin=0;
   else if(!s.budget&&s.monthly>0&&s.left>0){ fin=s.left; lbl=ymLabel(g.deadline); }
   else fin=monthsToReach(g.target,g.saved,base,s.r);
@@ -2163,7 +2199,7 @@ function renderGoal(){
     return {k,O,m,fin,earn,su:suit(k,term,g.type)}; });
   const recRow=rows.find(r=>r.k===rec), curRow=rows.find(r=>r.k===s.key);
   // faster levers
-  const base=s.budget||s.monthly, lev=[];
+  const base=planM(g,s), lev=[];
   if(g.saved<g.target&&base>0){
     if(s.key!==rec&&suit(s.key,term,g.type)!=="rec"&&recRow.m<curRow.m) lev.push({h:`换成 ${OPTS[rec].name}`,v:`每月少存 ${rm(curRow.m-recRow.m)}`,d:"同一个目标、同一个时间，差别只在钱放哪里。"});
     [200,500].forEach(add=>{ const n0=monthsToReach(g.target,g.saved,base,s.r), n1=monthsToReach(g.target,g.saved,base+add,s.r); if(isFinite(n0)&&n0-n1>=1) lev.push({h:`每月多放 RM${add}`,v:`早 ${durTxt(n0-n1)} 完成`,d:`${ymLabel(addMonthsYM(n1))} 就够了。`}); });
@@ -2225,7 +2261,7 @@ function renderGoal(){
       <div style="min-width:0"><div class="facts">
         <div class="fact"><div class="l">剩余金额</div><div class="v cy">${tk("gl-"+g.id,left)}</div><div class="s">已完成 ${Math.round(s.pct*100)}%</div></div>
         <div class="fact"><div class="l">预计完成时间</div><div class="v" id="etaV">${eta}</div><div class="s" id="etaS">${etaSub}</div></div>
-        <div class="fact"><div class="l">${s.budget?"你定的每月金额":"每月建议储蓄"}</div><div class="v" id="gmV">${tk("gm-"+g.id,base)}</div><div class="s" id="gmS">${showEasy?`每天约 ${dayRM(base)}${treat(base)?" · "+treat(base):""}`:"—"}</div></div>
+        <div class="fact"><div class="l">${s.budget?"你定的每月金额":"每月建议储蓄"}</div><div class="v" id="gmV">${isExp(g,s)?"—":tk("gm-"+g.id,base)}</div><div class="s" id="gmS">${showEasy?`每天约 ${dayRM(base)}${treat(base)?" · "+treat(base):""}`:"—"}</div></div>
         <div class="fact"><div class="l">当前状态</div><div class="v"><span class="pill ${s.st.c}">${s.st.t}</span></div><div class="s">${!isDone&&!isPaused?`照计划现在应该有 ${rm(s.expected)}`:isDone?"收在成就墙":"不算进每月要存的钱"}</div></div>
       </div><p class="motto">${line}</p></div>
     </section>
@@ -2234,7 +2270,7 @@ function renderGoal(){
     <div class="kpis">
       <div class="kpi"><div class="l">已经存了<em>SAVED</em></div><div class="v">${tk("g1-"+g.id,g.saved)}</div><div class="s">目标 ${rm(g.target)}</div></div>
       <div class="kpi hl"><div class="l">还差多少钱<em>LEFT</em></div><div class="v">${tk("g2-"+g.id,left)}</div><div class="s">${w?`下一站 ${esc(wpName(w))}，再存 ${rm(w.gap)}`:"金额够了"}</div></div>
-      <div class="kpi"><div class="l">${s.budget?"你定的每月金额":"每月需要存"}<em>MONTHLY</em></div><div class="v" id="g3V">${tk("g3-"+g.id,base)}</div><div class="s">${s.budget?(isFinite(s.finishN)?"照这个金额会存够":"这个金额存不够"):"放 "+s.O.name+"，"+s.O.range}</div></div>
+      <div class="kpi"><div class="l">${s.budget?"你定的每月金额":"每月需要存"}<em>MONTHLY</em></div><div class="v" id="g3V">${isExp(g,s)?"—":tk("g3-"+g.id,base)}</div><div class="s">${s.budget?(isFinite(s.finishN)?"照这个金额会存够":"这个金额存不够"):"放 "+s.O.name+"，"+s.O.range}</div></div>
       <div class="kpi"><div class="l">预计完成日期<em>ETA</em></div><div class="v" id="finV">${finish}</div><div class="s" id="finS">${finishSub}</div></div>
     </div>
     <section class="card mt"><div class="chead"><div><h2>里程碑</h2><p class="sub">${esc(WPI.sub)}，指着节点看详细</p></div></div>
@@ -2245,7 +2281,7 @@ function renderGoal(){
 
     <details class="sec" data-sec="plan"${SEC.plan?" open":""}><summary>Brader 方案：这笔钱放哪里<span class="hint">${s.O.name} · ${s.O.range}</span></summary><div class="body">
       <p class="sub" style="margin:0 0 14px">按目标期限（${durTxt(total)}）推荐。选一个，上面的每月金额、里程碑和下面的步骤会跟着变。</p>
-      <div class="budget"><label for="budget">我每个月可以放</label><div class="inp" style="width:170px"><span>RM</span><input id="budget" type="number" inputmode="decimal" min="0" step="any" placeholder="${HIDE?"****":Math.round(s.monthly)}" value="${g.budget||""}"></div><span class="dim" style="font-size:13px">不填就照「每月需要存」算</span></div>
+      <div class="budget"><label for="budget">我每个月可以放</label><div class="inp" style="width:170px"><span>RM</span><input id="budget" type="number" inputmode="decimal" min="0" step="any" placeholder="${HIDE?"****":isExp(g,s)?"":Math.round(s.monthly)}" value="${g.budget||""}"></div><span class="dim" style="font-size:13px">不填就照「每月需要存」算</span></div>
       ${WI?`<div class="whatif" id="whatif">
         <div class="wi-hd"><label for="wiRange">如果每个月放这么多……</label><b id="wiVal">${rm(base)}</b></div>
         <div class="wi-track"><input class="range" type="range" id="wiRange" min="${WI.min}" max="${WI.max}" step="${WI.step}" value="${WI.v0}" style="--fill:${((WI.v0-WI.min)/(WI.max-WI.min)*100).toFixed(2)}%" aria-describedby="wiOut"><span class="wi-mark" style="--p:${WI.p.toFixed(4)}" title="照计划 ${rm(s.monthly)}"></span></div>
@@ -2257,7 +2293,7 @@ function renderGoal(){
           <span class="radio" aria-hidden="true"></span>
           <span style="min-width:0"><span class="nm">${x.O.name}</span>${x.su==="rec"?'<span class="badge rec">Brader 推荐</span>':x.su==="no"?`<span class="badge no">${g.type==="emergency"?"不适合":"期限太短"}</span>`:x.su==="low"?'<span class="badge low">跑不赢通胀</span>':""}
             <span class="ds">回报 ${x.O.range} · ${x.O.risk} · ${x.O.liq}</span></span>
-          <span class="rt">${s.budget?(isFinite(x.fin)?ymLabel(addMonthsYM(x.fin)):"存不够"):"每月"}<b>${s.budget?(isFinite(x.fin)?durTxt(x.fin):"—"):rm(x.m)}</b></span></button>`).join("")}</div>
+          <span class="rt">${isExp(g,s)?"每月<b>—</b>":`${s.budget?(isFinite(x.fin)?ymLabel(addMonthsYM(x.fin)):"存不够"):"每月"}<b>${s.budget?(isFinite(x.fin)?durTxt(x.fin):"—"):rm(x.m)}</b>`}</span></button>`).join("")}</div>
       <div class="explain"><h3>为什么选 ${s.O.name}</h3><p>${s.O.why}</p>
         ${suit(s.key,term,g.type)==="no"?`<p class="bd">${g.type==="emergency"?"救命的钱要随时拿得到、不能有波动，千万不要放在没有流动性或高波动的地方，Brader 不建议。":`这个目标只有 ${durTxt(total)}，这类投资短期会波动。短期要用的钱放进去，跌了又没时间等反弹，被逼在亏损的情况下卖掉，那个才是真正的损失。Brader 不建议。`}</p>`:""}
         ${suit(s.key,term,g.type)==="low"?`<p class="wn">${durTxt(total)} 的目标放这里，回报跑不赢 4% 通胀，每月要多存不少钱。</p>`:""}
@@ -2278,7 +2314,7 @@ function renderGoal(){
       <div><div class="vs">
           <div class="vsr"><span>时间已过</span><span class="bar time"><i data-bar="tv-${g.id}" data-to="${(timePct*100).toFixed(1)}" style="width:${(timePct*100).toFixed(1)}%"></i></span><b>${Math.round(timePct*100)}%</b></div>
           <div class="vsr"><span>存款完成</span><span class="bar"><i data-bar="pv-${g.id}" data-to="${p100}" style="width:${p100}%"></i></span><b>${Math.round(s.pct*100)}%</b></div></div>
-        ${!isDone&&!isPaused?`<p class="verdict">${s.pct>=timePct+.005?`<span class="gd">✓ 存款跑在时间前面</span>，继续保持。`:s.st.c==="good"||s.pct>=timePct-.005?`<span class="gd">✓ 存款跟上了时间</span>，后段复利会帮你加速。`:`<span class="wn">时间跑快了一点</span>，照上面的每月金额存，就能追上。`}</p>`:""}
+        ${!isDone&&!isPaused?`<p class="verdict">${isExp(g,s)?`<span class="wn">期限已经过了</span>，设新日期后会重新算每月金额。`:s.pct>=timePct+.005?`<span class="gd">✓ 存款跑在时间前面</span>，继续保持。`:s.st.c==="good"||s.pct>=timePct-.005?`<span class="gd">✓ 存款跟上了时间</span>，后段复利会帮你加速。`:`<span class="wn">时间跑快了一点</span>，照上面的每月金额存，就能追上。`}</p>`:""}
         <div class="flist"><div>开始：<b>${g.start}</b></div><div>期限：<b>${durTxt(total)}</b></div><div>已过：<b>${durTxt(s.elapsed)}</b>（${Math.round(s.elapsed/Math.max(1,total)*100)}%）</div><div>照计划现在应该有：<b>${rm(s.expected)}</b></div><div>步骤：<b id="stepCnt2">${doneSteps}/${steps.length}</b> 完成</div></div></div>
     </div></div></details>
 
@@ -2537,8 +2573,8 @@ const ASK=[
    so:`所以，先顾好自己的退休，再开一个教育金户口，每个月自动投资 ${rm(nice(now))}；SSPN 一年存满 RM8,000 还可以扣税。`,
    acts:[{l:"把这个变成目标",pri:1,goal:1,f:()=>openAdd("孩子以后读大学",{name:"孩子教育金",target:tot,months:n,how:`问 Brader 算的：孩子 ${P.age} 岁、19 岁入学，一年 ${rm(P.per)} × ${P.yrs} 年，通胀 4%`})}]}; }},
 {id:"order",cat:"plan",needs:"IE",q:"我有好几个目标，应该先存哪一个？",kw:"先后 顺序 几个目标 先存哪个 九大阶梯 优先 太多目标",rel:["ef","card","split"],
- ans:c=>{ const act=activeSorted(), st=act.map(g=>stat(g)), monthly=st.reduce((a,s)=>a+(s.budget||s.monthly),0), hasEF=c.efGoals.length>0, efOk=efFull();
-  const ef=c.efGoals.find(g=>g.status==="active"), far=act.filter(g=>g.type!=="emergency").sort((a,b)=>b.deadline.localeCompare(a.deadline))[0], over=c.hasI&&c.hasE&&monthly>c.sur&&act.length>=2&&far;
+ ans:c=>{ const act=activeSorted(), st=act.map(g=>stat(g)), monthly=act.reduce((a,g,i)=>a+planM(g,st[i]),0), hasEF=c.efGoals.length>0, efOk=efFull();
+  const ef=c.efGoals.find(g=>g.status==="active"), far=act.filter(g=>g.type!=="emergency"&&!isExp(g,stat(g))).sort((a,b)=>b.deadline.localeCompare(a.deadline))[0], over=c.hasI&&c.hasE&&monthly>c.sur&&act.length>=2&&far;
   return {open:"每一个 step 都有它的位置和顺序，不能乱跳，跳了后面就会出现问题。",
    tool:{t:"Brader 的理财九大阶梯",h:tSteps(["存三到六个月的救命钱，放 MMF","还清超过 8% 利息的债","买保险：medical card；有家庭再加人寿和意外","投资前先用满扣税额（PRS、SSPN、EPF 自愿供款）","抽薪水 10% 做退休投资，从 ETF 开始","孩子教育金","投资比例从 10% 慢慢提高到 25%","退休前还清房贷以外的债","做好传承：遗嘱、信托"],efOk?-1:0)},
    calc:[act.length?`你现在有 ${act.length} 个目标进行中，每个月一共要存 ${B(monthly)}${c.hasI&&c.hasE?`，你的每月盈余是 ${B(c.sur)}`:""}。`:"你现在还没有进行中的目标。"],
@@ -2852,7 +2888,7 @@ function openAdd(prefill,over){
       let G=null, gT=0;
       const TOUCH=new Set(); // 用户自己改过的栏位，重新估算时不盖掉
       const moreLabel=()=>{ const b=$("#aFold"), open=!$("#aFields").hidden; b.setAttribute("aria-expanded",String(open));
-        b.textContent=open?"收起":G?(G.how.includes("请改成你的预算")?"改成你的预算":"修改金额和日期"):"自己填名称、金额和日期"; };
+        b.textContent=open?"收起":G?(G.rough?"填你的预算":"修改金额和日期"):"自己填名称、金额和日期"; };
       const setMore=open=>{ $("#aFields").hidden=!open; moreLabel(); };
       const typeNow=()=>G?G.type:detectType($("#aName").value);
       const calc=()=>{
@@ -2860,7 +2896,7 @@ function openAdd(prefill,over){
         if(t<=0){ box.innerHTML=""; return; }
         const n=Math.max(1,monthsBetween(today(),deadlineDate(due))), k=recommend(calMonths(today(),due),typeNow()), O=OPTS[k], m=t>sv?pmtFor(t,sv,mrate(O.r),n):0;
         const [yy,mm]=due.split("-"), due2=(+yy+1)+"-"+mm, n2=Math.max(1,monthsBetween(today(),deadlineDate(due2))), m2=t>sv?pmtFor(t,sv,mrate(OPTS[recommend(calMonths(today(),due2),typeNow())].r),n2):0;
-        const sur=S.income?S.income-S.expense:0, used=activeSorted().reduce((a,x)=>{ const st=stat(x); return a+(st.budget||st.monthly); },0), free=sur-used;
+        const sur=S.income?S.income-S.expense:0, used=activeSorted().reduce((a,x)=>a+planM(x,stat(x)),0), free=sur-used;
         const ease=easeHTML(m,free);
         const canExt=[...$("#aDue").options].some(o=>o.value===due2), easy=m>0&&m2>0&&m2<m-.5&&canExt;
         box.innerHTML=`<div class="ares" id="aHero"><span class="an">${esc($("#aName").value.trim()||"这个目标")} · ${rm(t)} · ${ymLabel(due)}</span>${m<=0?`<b class="ad">已经存够了</b>`:`<b class="ad">每天存 ${dayRM(m)}</b><span class="am" id="tCalc">每月 ${rm(m)}${treat(m)?` · ${treat(m)}`:""}</span>`}</div>
@@ -2883,6 +2919,7 @@ function openAdd(prefill,over){
         if(!TOUCH.has("name")) $("#aName").value=G.name;
         if(!TOUCH.has("target")) $("#aTarget").value=G.target;
         if(!TOUCH.has("due")) setDue(G.months);
+        if(G.rough){ if(!TOUCH.has("target")) $("#aTarget").value=""; setMore(true); }
         $("#aEst").innerHTML=`<div class="est"><dl><dt>识别目标</dt><dd><b>${icon(G.type)} ${TYPE_LABEL[G.type]}</b></dd><dt>怎么估</dt><dd class="guess">${esc(G.how)}</dd></dl>${ASK_TXT.test(txt)?`<p class="sub">这比较像一个问题。<button class="linkbtn" type="button" id="aToAsk">去问 Brader</button></p>`:""}</div>`;
         if($("#aToAsk")) $("#aToAsk").onclick=()=>{ closeSheet(); go("ask"); };
         ["#fText","#fName","#fTarget","#fSaved"].forEach(id=>fieldErr(id,"")); moreLabel(); calc(); };
@@ -2951,7 +2988,7 @@ function openUpdate(g){
         const wpN=x=>wps.filter(w=>x>=g.target*w.f-.5).length, wb=wpN(g.saved);
         if(busyOk) return; busyOk=true;
         const snap=snapState(), view={page:VIEW.page,id:VIEW.id}, s0=g.saved;
-        g.log.push({id:uid(),d,a:mode==="out"?-v:v,k:mode==="set"?"set":"add",n:$("#uNote").value.trim()}); recomputeSaved(g); save();
+        g.log.push({id:uid(),d,a:mode==="out"?-v:v,k:mode==="set"?"set":"add",n:$("#uNote").value.trim()}); recomputeSaved(g); save(); if(mode==="add") askSafe();
         if(ph&&mode==="add"&&pzMotion()&&g.saved>s0){ const done=g.saved>=g.target&&g.status==="active", hit=!done&&wpN(g.saved)>wb?wps[wpN(g.saved)-1]:null, from=$("#uHold").getBoundingClientRect(); closeSheet();
           pzDepositStage(g,v,s0,done,hit,from,()=>{ if(done){ completeGoal(g,snap,view,true); return; } render(); offerUndo(`已存入 ${rm(v)}，现在 ${pctOf(g,g.saved)}%`+(hit?`，${hit.hit} 🎉`:""),snap,view); }); return; }
         const finish=()=>{ closeSheet();
@@ -3254,10 +3291,10 @@ function saveTarget(){ const act=activeSorted().filter(g=>g.saved<g.target); if(
   return act.map(g=>({g,r:monthNeed(g,stat(g)).rest})).sort((a,b)=>b.r-a.r)[0].g; }
 function openSave(){ const g=saveTarget(); if(g) openQuick(g,{pick:true}); else openAdd(""); }
 function openGoalPick(cur){ const L=activeSorted().filter(g=>g.saved<g.target);
-  modal({title:"存进哪一个目标？",body:`<div class="pz-list">${L.map(g=>{ const s=stat(g); return `<button class="pz-li" type="button" data-pick="${g.id}"${g.id===cur?' aria-current="true"':""}><span class="gic" aria-hidden="true">${icon(g.type)}</span><span class="pz-lt"><b>${esc(g.name)}</b><small>${Math.round(s.pct*100)}% · 这个月还要存 ${rm(monthNeed(g,s).rest)}</small></span>${g.id===cur?svgI("check"):""}</button>`; }).join("")}</div>`,
+  modal({title:"存进哪一个目标？",body:`<div class="pz-list">${L.map(g=>{ const s=stat(g); return `<button class="pz-li" type="button" data-pick="${g.id}"${g.id===cur?' aria-current="true"':""}><span class="gic" aria-hidden="true">${icon(g.type)}</span><span class="pz-lt"><b>${esc(g.name)}</b><small>${Math.round(s.pct*100)}% · ${isExp(g,s)?"已到期":`这个月还要存 ${rm(monthNeed(g,s).rest)}`}</small></span>${g.id===cur?svgI("check"):""}</button>`; }).join("")}</div>`,
     onMount:()=>$("#sheetRoot").querySelectorAll("[data-pick]").forEach(b=>b.onclick=()=>openQuick(GOALS.find(x=>x.id===b.dataset.pick),{pick:true}))});
 }
-function renderHomePh(c){ const {act,stats,ns,hasEF,efOpen,pctAll,flowCard,health,far,surplus}=c; let F;
+function renderHomePh(c){ const {act,stats,ns,hasEF,efOpen,pctAll,flowCard,health,far,surplus,overBy}=c; let F;
   const live=stats.filter(x=>x.g.saved<x.g.target), H=hiDebts();
   if(!hasEF) F={l:"你的第一步",big:"救命的钱",s:"先存够几个月的开销，其他目标才稳。",b:"建立救命的钱",f:()=>openAdd("存够救命的钱"),txt:1};
   else if(efOpen){ const s=stat(efOpen), r=monthNeed(efOpen,s); F={l:r.rest>0?"这个月先存":"这个月的救命钱存好了",n:r.rest>0?r.rest:r.need,s:`「${esc(efOpen.name)}」还差 ${rm(efOpen.target-efOpen.saved)}`,b:"存钱",f:()=>openQuick(efOpen,{pick:true})}; }
@@ -3266,17 +3303,17 @@ function renderHomePh(c){ const {act,stats,ns,hasEF,efOpen,pctAll,flowCard,healt
   else if(act.length) F={l:"所有目标",big:"金额都够了",s:"去目标页面按「标记完成」，收下奖杯。",b:"看目标",f:()=>go("goals"),txt:1};
   else F={l:"现在",big:"没有进行中的目标",s:"写一句你想完成的事，马上算给你看。",b:"新目标",f:()=>openAdd(""),txt:1};
   const hc=S.income>0?Math.round(S.expense/S.income*100):null, tm=act.length?tmHTML(stats):"";
-  const tile=(k,ic,t,d)=>`<button class="pz-tile" type="button" data-pz="${k}">${svgI(ic)}<b>${t}</b><small>${d}</small></button>`;
+  const tile=(k,ic,t,d,c="")=>`<button class="pz-tile${c}" type="button" data-pz="${k}">${svgI(ic)}<b>${t}</b><small>${d}</small></button>`;
   $("#main").innerHTML=`<section class="card pz-hero" id="pzHero">${beamHTML()}${meteorsHTML(5)}
       <div class="pz-hl"><span class="pz-l">${F.l}</span><b class="pz-big${F.txt?" tx":""}" id="pzBig">${F.txt?F.big:tk("pz-n",F.n)}</b><span class="pz-s">${F.s}</span></div>
       <div class="ring pz-hr pz-fly">${rippleHTML}${gauge(pctAll,"ov-ring")}<div class="ring-c"><b>${tk("ov-pct",Math.round(pctAll*100),"pct")}</b><span>总进度</span></div></div>
       <button class="btn pri lg pz-cta" type="button" id="pzCta">${F.b}</button></section>
     <button class="next ${ns.tone} pz-next" type="button" id="nsBtn"><span class="t"><span class="ic">${svgI(ns.ic)}</span><span><span class="lbl">下一步</span><b>${ns.t}</b></span></span>${svgI("next")}</button>
-    <div class="pz-tiles">${tile("flow","chart","现金流",surplus==null?"还没填收入":"盈余 "+rm(surplus))}${tile("health","shield","健康检查",hc==null?"还没填收入":"开销 "+hc+"%")}${tm?tile("tm","clock","时光机","拖到未来"):""}</div>`;
+    <div class="pz-tiles">${tile("flow","chart","现金流",surplus==null?"还没填收入":overBy>0?"超出 "+rm(overBy):"盈余 "+rm(surplus),overBy>0?" over":"")}${tile("health","shield","健康检查",hc==null?"还没填收入":"开销 "+hc+"%")}${tm?tile("tm","clock","时光机","拖到未来"):""}</div>`;
   $("#pzCta").onclick=F.f; $("#nsBtn").onclick=ns.f;
   const open=k=>{ if(k==="health"&&!health){ openSpend(); return; }
     const P={flow:["每月现金流",flowCard],health:["财务健康检查",health],tm:["时光机",tm]}[k];
-    modal({title:P[0],body:P[1],cls:"pz-panel",onMount:()=>{ const on=(id,f)=>{ const el=$(id); if(el) el.onclick=f; }; on("#ovSet",openProfile); on("#ovSpend",()=>openSpend()); on("#ovFar",()=>confirmPause(far)); if(k==="tm") bindTM(stats); runAnims($("#sheetRoot")); drawBeams(); }}); };
+    modal({title:P[0],body:P[1],cls:"pz-panel",onMount:()=>{ const on=(id,f)=>{ const el=$(id); if(el) el.onclick=f; }; on("#ovSet",openProfile); on("#ovSpend",()=>openSpend()); on("#ovFar",()=>confirmPause(far)); on("#ovExp",()=>{ const x=stats.find(y=>isExp(y.g,y.s)); if(x) openEdit(x.g); }); if(k==="tm") bindTM(stats); runAnims($("#sheetRoot")); drawBeams(); }}); };
   $("#main").querySelectorAll("[data-pz]").forEach(b=>b.onclick=()=>open(b.dataset.pz));
 }
 function renderWelcomePh(){
@@ -3290,8 +3327,15 @@ function renderWelcomePh(){
   let t=0; const inp=$("#wText");
   const show=()=>{ clearTimeout(t); if(!$("#wRes")) return; const txt=inp.value.trim(), box=$("#wRes"); $("#wChips").hidden=!!txt; if(txt.length<2){ box.innerHTML=""; return; }
     if(DEBT_TXT.test(txt)){ box.innerHTML=`<div class="ares" id="aDebt"><span class="an">这是还债，不是存钱</span><b class="ad" style="font-size:20px">去还债计划排好顺序</b><button class="btn pri lg pz-cta" type="button" id="wDebt">去还债计划</button></div>`; $("#wDebt").onclick=()=>{ const pre={kind:debtKindOf(txt),bal:parseAmount(txt)||""}; go("debt"); openDebtForm(null,pre); }; return; }
-    const G=guess(txt), due=addMonthsYM(G.months), n=Math.max(1,monthsBetween(today(),deadlineDate(due))), O=OPTS[recommend(calMonths(today(),due),G.type)], m=pmtFor(G.target,0,mrate(O.r),n);
-    box.innerHTML=`<div class="ares" id="aHero"><span class="an">${esc(G.name)} · ${rm(G.target)} · ${ymLabel(due)}</span><b class="ad">每天存 ${dayRM(m)}</b><span class="am">每月 ${rm(m)} · 放 ${O.name}</span></div>
+    const G=guess(txt), plan=(t,mo)=>{ const due=addMonthsYM(mo), n=Math.max(1,monthsBetween(today(),deadlineDate(due))), O=OPTS[recommend(calMonths(today(),due),G.type)]; return {due,O,m:pmtFor(t,0,mrate(O.r),n)}; };
+    if(G.rough){ const old=$("#wAmt")?$("#wAmt").value:"";
+      box.innerHTML=`<div class="ares" id="aHero"><span class="an">${esc(G.name)}</span><b class="ad" style="font-size:20px">这个目标要多少钱？</b><span class="am">填一个数字，马上算每天要存多少。</span><div class="inp" style="margin-top:10px"><span>RM</span><input id="wAmt" type="number" inputmode="decimal" min="1" step="any" enterkeyhint="done" placeholder="例如 5000" aria-label="目标金额" value="${esc(old)}"></div><span class="am" id="wAmtRes" aria-live="polite"></span></div>
+        <button class="btn pri lg pz-cta" type="button" id="wCreate" disabled>建立目标</button>`;
+      let P=null, T=0; const upd=()=>{ T=Math.round(parseFloat($("#wAmt").value)||0); P=T>0?plan(T,parseMonths(txt)||(T>=50000?60:T>=20000?36:12)):null; $("#wCreate").disabled=!P; $("#wAmtRes").innerHTML=P?`<b>每天存 ${dayRM(P.m)}</b> · 每月 ${rm(P.m)} · ${ymLabel(P.due)} · 放 ${P.O.name}`:""; };
+      $("#wAmt").addEventListener("input",upd); $("#wAmt").addEventListener("keydown",e=>{ if(e.key==="Enter"){ e.preventDefault(); e.target.blur(); } }); upd();
+      $("#wCreate").onclick=()=>{ if(P) createGoal({type:G.type,text:txt,name:G.name,target:T,deadline:P.due,saved:0,extra:G.extra}); }; return; }
+    const {due,O,m}=plan(G.target,G.months);
+    box.innerHTML=`<div class="ares" id="aHero"><span class="an">${esc(G.name)} · ${rm(G.target)} · ${ymLabel(due)}</span><b class="ad">每天存 ${dayRM(m)}</b><span class="am">每月 ${rm(m)} · 放 ${O.name}</span><span class="ah" id="wHow"><b>怎么估：</b>${esc(G.how)}</span></div>
       <button class="btn pri lg pz-cta" type="button" id="wCreate">建立目标</button><button class="linkbtn amore" type="button" id="wEdit">修改金额和日期</button>`;
     $("#wCreate").onclick=()=>createGoal({type:G.type,text:txt,name:G.name,target:G.target,deadline:due,saved:0,extra:G.extra}); $("#wEdit").onclick=()=>openAdd(txt); };
   inp.addEventListener("input",e=>{ if(e.isComposing) return; clearTimeout(t); t=setTimeout(show,260); });
@@ -3302,7 +3346,7 @@ function renderWelcomePh(){
   ["#wMove","#wPaste"].forEach(id=>{ const b=$(id); if(b) b.onclick=pasteRestore; });
 }
 function renderGoalsPh(){ const L={active:activeSorted(),paused:GOALS.filter(g=>g.status==="paused"),done:GOALS.filter(g=>g.status==="done")}, cur=L[PZSEG]?PZSEG:"active", list=L[cur];
-  const row=g=>{ const s=stat(g), left=Math.max(0,g.target-g.saved), sub=cur==="active"?(left>0?`这个月还要存 ${rm(monthNeed(g,s).rest)} · 还差 ${rm(left)}`:"金额够了"):cur==="paused"?`${rm(g.saved)} / ${rm(g.target)}`:`${g.doneAt||""} 完成`;
+  const row=g=>{ const s=stat(g), left=Math.max(0,g.target-g.saved), sub=cur==="active"?(left>0?(isExp(g,s)?`<span class="wn">已到期 · 还差 ${rm(left)}，要设新日期</span>`:`这个月还要存 ${rm(monthNeed(g,s).rest)} · 还差 ${rm(left)}`):"金额够了"):cur==="paused"?`${rm(g.saved)} / ${rm(g.target)}`:`${g.doneAt||""} 完成`;
     return `<div class="pz-rw" data-id="${g.id}">${cur==="done"?"":`<button class="pz-act" type="button" ${cur==="active"?`data-pzpause="${g.id}">暂停`:`data-pzresume="${g.id}">恢复`}</button>`}
       <div class="pz-row"><button class="pz-rm" type="button" data-open="${g.id}"><span class="ring pz-rr" data-fly="${g.id}">${gauge(s.pct,"pr-"+g.id)}<span class="ring-c"><b>${Math.round(s.pct*100)}%</b></span></span><span class="pz-lt"><b>${esc(g.name)}</b><small>${sub}</small></span></button>${cur==="active"&&left>0?`<button class="qadd" type="button" data-qadd="${g.id}" aria-label="存入「${esc(g.name)}」">${svgI("plus")}</button>`:""}</div></div>`; };
   $("#main").innerHTML=`<div class="pz-gh"><div class="pz-seg" role="tablist" aria-label="目标状态">${[["active","进行中"],["paused","暂停"],["done","完成"]].map(([k,t])=>`<button type="button" role="tab" data-seg="${k}" aria-selected="${cur===k}">${t}${L[k].length?` ${L[k].length}`:""}</button>`).join("")}</div><button class="btn pri icon" type="button" id="gAdd" aria-label="新目标">${svgI("plus")}</button></div>
@@ -3463,7 +3507,10 @@ const loDebts=()=>liveDebts().filter(d=>!isHi(d)).sort((a,b)=>b.rate-a.rate);
 // 已经还清、但还在这一轮计划里的月供，继续滚到下一笔
 const rollM=()=>debtList().filter(d=>d.paidAt&&isHi(d)&&!d.won).reduce((a,d)=>a+d.min,0);
 function syncDebtM(){ if(debtList().length) S.debt=Math.round(liveDebts().reduce((a,d)=>a+d.min,0)); }
-function efGapFor(inc,exp){ const need=exp*Math.min(efMonths(Object.assign({},S,{income:inc})),6), saved=GOALS.filter(g=>g.type==="emergency"&&g.status!=="paused").reduce((a,g)=>a+g.saved,0); return Math.max(0,need-saved); }
+// 有「救命的钱」目标就用目标的金额，全站「还差多少」只有一个数字；还没有目标才用建议金额
+function efGapFor(inc,exp){ const L=GOALS.filter(g=>g.type==="emergency"&&g.status!=="paused"); if(L.length) return efFull()?0:L.reduce((a,g)=>a+Math.max(0,g.target-g.saved),0);
+  return Math.max(0,exp*Math.min(efMonths(Object.assign({},S,{income:inc})),6)); }
+function efLowTxt(){ const L=GOALS.filter(g=>g.type==="emergency"&&g.status!=="paused"), rec=S.expense*Math.min(efMonths(S),6); return L.length&&rec>0&&L.reduce((a,g)=>a+g.target,0)<rec-1?` Brader 建议存到 ${rm(rec)}，比你现在的目标多，可以在目标里改。`:""; }
 const otherGoalsList=()=>activeSorted().filter(g=>g.type!=="emergency"&&g.saved<g.target&&stat(g).left>0);
 const otherGoalsM=()=>otherGoalsList().reduce((a,g)=>{ const st=stat(g); return a+(st.budget||st.monthly); },0);
 function debtFunds({inc=S.income,exp=S.expense,paused=false}={}){ const sur=inc>0?Math.max(0,inc-exp):0, goals=paused?0:otherGoalsM(); return {sur,goals,extra:Math.max(0,sur-goals),gap:inc>0?efGapFor(inc,exp):0}; }
@@ -3500,7 +3547,7 @@ function renderDebt(){
   if(hi.length){
     if(noInc) alerts.push(alert("info","user","先填收入和开销","填了才知道每月可以多还多少，现在只照最低还款算。","帮我算开销","dSpend"));
     else if(!p.done) alerts.push(alert("warn","alert","现在的还款追不上利息","你现在每个月的盈余，连利息都还不够。还不起的话，先探索分期：转 installment 或 balance transfer；真的逼不得已，才找 AKPK。","帮我算开销","dSpend"));
-    if(!noInc&&p.gap>0) alerts.push(alert("info","shield","救命的钱还差 "+rm(p.gap),`先存满它，这些债暂时只付最低还款。不然一有紧急状况又要刷卡应急，回到原点。${p.efN?` 照现在的盈余，大约 ${durTxt(p.efN)}存满。`:""}`,GOALS.some(g=>g.type==="emergency"&&g.status!=="paused")?"查看":"建立救命的钱","dEF"));
+    if(!noInc&&p.gap>0) alerts.push(alert("info","shield","救命的钱还差 "+rm(p.gap),`先存满它，这些债暂时只付最低还款。不然一有紧急状况又要刷卡应急，回到原点。${efLowTxt()}${p.efN?` 照现在的盈余，大约 ${durTxt(p.efN)}存满。`:""}`,GOALS.some(g=>g.type==="emergency"&&g.status!=="paused")?"查看":"建立救命的钱","dEF"));
     if(!noInc&&paus.length){ const q=planDebt({paused:true}), early=p.done&&q.done?p.months-q.months:null, less=p.done&&q.done?p.interest-q.interest:0;
       if((!p.done&&q.done)||early>=1||less>=1) alerts.push(alert("warn","pause",`暂停 ${paus.length} 个其他目标，先还债`,`${esc(paus.map(g=>g.name).slice(0,3).join("、"))}${paus.length>3?" 等":""}每月要用 ${rm(p.goals)}。${early>=1?`暂停后可以早 ${durTxt(early)}还清，少付 ${rm(less)} 利息。`:p.done?`暂停后每月可以多还 ${rm(p.goals)}，少付 ${rm(less)} 利息。`:`暂停后，${durTxt(q.months)}就能还清。`}`,"一键暂停","dPause")); }
   }
@@ -3679,7 +3726,7 @@ function openIncome(g){
     }});
 }
 function showEase(g){
-  const st=stat(g), m=st.budget||st.monthly, sur=S.income-S.expense, others=activeSorted().filter(x=>x.id!==g.id).reduce((a,x)=>{ const t=stat(x); return a+(t.budget||t.monthly); },0);
+  const st=stat(g), m=st.budget||st.monthly, sur=S.income-S.expense, others=activeSorted().filter(x=>x.id!==g.id).reduce((a,x)=>a+planM(x,stat(x)),0);
   const verdict=sur<=0?`<span class="wn">△ 现在每个月没有盈余</span>，先看看哪一项大开销可以减少`:easeHTML(m,sur-others);
   modal({title:"算好了",body:`<p class="ctext">「${esc(g.name)}」每月要存 <b>${rm(m)}</b>，你每月盈余 <b>${rm(sur)}</b>。</p><p class="ainfo" id="oEase">${verdict}</p>`,
     foot:`<button class="btn pri" type="button" id="oOk">知道了</button>`,focus:"#oOk",onMount:()=>{ $("#oOk").onclick=closeSheet; }});
@@ -3749,6 +3796,17 @@ async function pasteRestore(){ let t=""; try{ t=await navigator.clipboard.readTe
   if(has&&GOALS.length) return openPaste(t.trim()); // 这里已经有资料：先让用户看到「会被取代」，按了才换
   if(has){ try{ applyBackup(fromCode(t)); copyText("").catch(()=>{}); return; }catch(e){} }
   openPaste(); }
+/* 第一次存钱之后，问一次怎么把资料保住（每台设备只问一次） */
+function safeKind(){ if(OB.safeAsk||!GOALS.length) return ""; if(INAPP) return "inapp"; if(IOS&&!STANDALONE&&!OB.home) return "ios"; return needBackup()?"backup":""; }
+let SAFET=0;
+function askSafe(){ clearTimeout(SAFET); let n=0; const tick=()=>{ const k=safeKind(); if(!k) return; if($("#pzStage")||$("#shade")||$("#toastRoot .tact")){ if(++n<100) SAFET=setTimeout(tick,250); return; } showSafe(k); }; SAFET=setTimeout(tick,600); }
+function showSafe(k){ obSet("safeAsk",1);
+  const T={ios:["先把资料保住","你的资料只存在这台手机，没有上传到任何地方。<b>iPhone 的 Safari 超过 7 天没打开这个网站，资料可能会被清掉。</b>加到主屏幕之后就安全多了。","加到主屏幕"],
+    inapp:["这里存不稳资料","你现在用的是 App 里面的浏览器，<b>资料可能留不住。</b>换到 Safari 或 Chrome 打开，再继续存钱。","看怎么做"],
+    backup:["存一份备份",`你的资料只存在这个浏览器，没有上传到任何地方。<b>下载一份备份</b>，换${PHONE?"手机":"电脑"}或资料不见时，可以一键恢复。`,"下载备份"]}[k];
+  modal({title:T[0],body:`<p class="ctext" id="sfTxt">${T[1]}</p>${k==="backup"?"":'<p class="sub" style="margin:12px 0 0"><button class="linkbtn" type="button" id="sfBak">或者先下载一份备份</button></p>'}`,
+    foot:`<button class="btn ghost" type="button" id="sfLater">先不用</button><button class="btn pri" type="button" id="sfGo">${T[2]}</button>`,focus:"#sfGo",
+    onMount:()=>{ $("#sfLater").onclick=closeSheet; const bak=()=>{ downloadBackup(); closeSheet(); }; if($("#sfBak")) $("#sfBak").onclick=bak; $("#sfGo").onclick=k==="backup"?bak:openHome; }}); }
 function openHome(){
   const foot=`<button class="btn ghost" type="button" id="hLater">等下再做</button><button class="btn pri" type="button" id="hDone">我做好了</button>`;
   const bind=()=>{ $("#hLater").onclick=closeSheet; $("#hDone").onclick=()=>{ obSet("home",1); closeSheet(); render(); };
@@ -3812,6 +3870,8 @@ render();
 initCloud();
 watchFX();
 pzKeepPop();
+/* 没网也能打开：只在正式网址注册，本地文件不用 */
+if("serviceWorker" in navigator&&/(^|\.)github\.io$|^localhost$|^127\.0\.0\.1$/.test(location.hostname)) addEventListener("load",()=>{ navigator.serviceWorker.register("sw.js").catch(()=>{}); });
 })();
 </script>
 </body>
