@@ -1168,6 +1168,48 @@ html.phone #pzPtr{display:grid;place-items:center;position:fixed;left:50%;top:0;
 #pzPtr.spin svg{animation:pzptr .75s linear infinite}
 @keyframes pzptr{to{transform:rotate(360deg)}}
 @media print{html.phone,html.phone body{position:static;display:block;height:auto;overflow:visible}html.phone .layout{overflow:visible}}
+/* ---------- 先后顺序：排名、拖动、晚几个月 ---------- */
+.vh{position:absolute!important;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+.rk{flex:none;min-width:22px;height:22px;padding:0 6px;display:inline-grid;place-items:center;border-radius:99px;background:var(--cyan-soft);color:var(--cyan);font:700 12px/1 var(--f-num)}
+#gOrder .gcwrap{cursor:grab;touch-action:manipulation}
+#gOrder .gcwrap .gcard{cursor:inherit}
+.pz-rows .pz-rw{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+html.reord,html.reord *{cursor:grabbing!important;-webkit-user-select:none!important;user-select:none!important}
+.rph{opacity:.32;outline:2px dashed var(--line2);outline-offset:-2px;border-radius:var(--r-lg)}
+.rph .card{box-shadow:none}
+.rghost{position:fixed!important;z-index:90;margin:0!important;pointer-events:none;opacity:.96;box-shadow:0 22px 46px -16px var(--sh),0 0 0 2px var(--cyan);border-radius:var(--r-lg);background:var(--card);transition:none!important;will-change:transform}
+.rghost .tilt,.rghost .card{transform:none!important}
+.pz-rw.rghost{border-top:0;border-radius:14px}
+.rghost .pz-act{display:none}
+.rghost .pz-row{transform:none!important}
+.rlift{animation:rlift .3s var(--ease)}
+@keyframes rlift{40%{transform:scale(1.02)}}
+.pz-rm .rk{margin-right:-2px}
+.pz-dic{flex:none;width:52px;height:52px;display:grid;place-items:center;border-radius:50%;background:var(--card2);font-size:22px}
+.pz-lt b [data-lt] .pill{margin-left:2px;vertical-align:1px;font-size:11.5px;padding:0 8px}
+.gdebt .kv{grid-template-columns:auto minmax(0,1fr)}
+.gdebt .mid{min-height:86px}
+.forder{list-style:none;margin:12px 0 0;padding:0;display:grid;gap:2px}
+.forder li{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:4px 10px;padding:7px 0;border-top:1px solid var(--line);font-size:13.5px}
+.forder li:first-child{border-top:0}
+.forder .fn{min-width:0;overflow-wrap:anywhere}
+.forder .fn i{display:inline-block;width:9px;height:9px;border-radius:3px;margin-right:7px;vertical-align:0}
+.forder .fa{font-family:var(--f-num);text-align:right;white-space:nowrap}
+.forder .fa small{color:var(--muted);font-size:12px}
+.forder .ft{grid-column:2/4;display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:12.5px;color:var(--muted)}
+.forder .ft:empty{display:none}
+.forder li.fleft{color:var(--muted)}
+.fev{margin:10px 0 0;padding:0;list-style:none;font-size:13px;color:var(--ink2)}
+.fev li{position:relative;padding:4px 0 4px 18px}
+.fev li::before{content:"↪";position:absolute;left:0;top:4px;color:var(--cyan)}
+.flowtip{margin:0 0 16px;padding:12px 14px;border-radius:12px;background:var(--card2);border:1px solid var(--line);font-size:13.5px;color:var(--ink2)}
+.flowtip.warn{border-color:rgba(245,181,68,.35);background:var(--warn-soft)}
+.flowtip.good{border-color:rgba(61,214,140,.3);background:var(--good-soft)}
+.flowtip .fbtns{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.rkpick{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px}
+.rkpick .inp{width:auto;min-width:150px}
+.rkout{margin:6px 0 0;font-size:13px;line-height:1.55}
+.rkout ul{margin:4px 0 0;padding-left:18px}
 </style>
 <script>try{if(localStorage.getItem("brader-theme")==="light"){document.documentElement.classList.add("light");var tc=document.querySelector('meta[name="theme-color"]');if(tc)tc.setAttribute("content","#F3F5FA")}}catch(e){}</script>
 </head>
@@ -1574,7 +1616,29 @@ const wpsOf=g=>wpInfo(g).list;
 // a short stretch still gets room for its label
 const msCols=L=>L.map((x,i)=>`minmax(min(72px,22%),${Math.round((x.f-(i?L[i-1].f:0))*1000)}fr)`).join(" ");
 const efFull=()=>GOALS.some(g=>g.type==="emergency"&&g.status!=="paused"&&(g.status==="done"||g.saved>=g.target));
-const activeSorted=()=>GOALS.filter(g=>g.status==="active").sort((a,b)=>(a.type==="emergency"?-1:0)-(b.type==="emergency"?-1:0)||a.deadline.localeCompare(b.deadline));
+/* ================= 先后顺序（目标互相影响） =================
+   S.order = 目标 id 和 "debt"（多还高利息债）排的先后，用户在「我的目标」拖。没排过就照 Brader 的顺序：
+   救命的钱 → 多还高利息债 → 其他目标（期限近的先）。新目标放最后。
+   每个月的盈余照这个顺序分，见下面的 flowSim()。 */
+const DROW="debt";
+const byDl=(a,b)=>a.deadline.localeCompare(b.deadline);
+function braderOrder(){ const ef=GOALS.filter(g=>g.type==="emergency").sort(byDl), rest=GOALS.filter(g=>g.type!=="emergency").sort(byDl); return [...ef.map(g=>g.id),DROW,...rest.map(g=>g.id)]; }
+function orderAll(){ const has=new Set(GOALS.map(g=>g.id));
+  if(!Array.isArray(S.order)||!S.order.length) return braderOrder();
+  const o=S.order.filter((x,i,a)=>a.indexOf(x)===i&&(x===DROW||has.has(x)));
+  if(!o.includes(DROW)){ let i=0; while(i<o.length&&(GOALS.find(g=>g.id===o[i])||{}).type==="emergency") i++; o.splice(i,0,DROW); }
+  GOALS.forEach(g=>{ if(!o.includes(g.id)) o.push(g.id); }); // 不在顺序里的（例如旧备份）放最后
+  return o; }
+const debtRowOn=()=>S.income>0&&hiDebts().length>0;
+const activeSorted=()=>{ const R=new Map(orderAll().map((id,i)=>[id,i])); return GOALS.filter(g=>g.status==="active").sort((a,b)=>R.get(a.id)-R.get(b.id)); };
+// 「我的目标」看得到的先后：进行中的目标 + 多还高利息债（有高利息债、填了收入才有）
+function visOrder(){ const on=debtRowOn(); return orderAll().filter(id=>id===DROW?on:(GOALS.find(g=>g.id===id)||{}).status==="active"); }
+// 看得到的换成新的先后；暂停、完成的目标留在原来的位置，恢复时回到原位
+function mergeVis(ids){ const all=orderAll(), vs=new Set(visOrder()); let k=0; return all.map(id=>vs.has(id)?ids[k++]:id); }
+function setVisOrder(ids){ S.order=mergeVis(ids); }
+// 放在看得到的第 pos 个（从 0 算）；不填 = 最后
+function insertAt(id,pos){ const all=orderAll().filter(x=>x!==id), vis=visOrder().filter(x=>x!==id);
+  if(pos==null||pos>=vis.length) all.push(id); else all.splice(all.indexOf(vis[pos]),0,id); S.order=all; }
 
 /* ================= steps (Brader method) ================= */
 function stepsFor(g,s){
@@ -1938,7 +2002,8 @@ function renderOverview(){
   const hasEF=GOALS.some(g=>g.type==="emergency"&&g.status!=="paused");
   const efOpen=hasEF&&!efFull()?GOALS.find(g=>g.type==="emergency"&&g.status!=="paused"):null;
   const nonEF=act.filter(g=>g.type!=="emergency"&&!isExp(g,stat(g)));
-  const far=surplus>0&&monthly>surplus&&nonEF.length>=2?nonEF.slice().sort((a,b)=>b.deadline.localeCompare(a.deadline))[0]:null;
+  const far=surplus>0&&monthly>surplus&&nonEF.length>=2?nonEF[nonEF.length-1]:null; // 排最后的（照用户排的先后）
+  const F=flowNow(), lateX=F.hasI?F.items.find(x=>lateOf(x)>=1)||null:null;
   const bkDays=S.lastBackup?daysAgo(S.lastBackup):null, bkWarn=GOALS.length>0&&(bkDays==null||bkDays>30);
   const bkTxt=bkDays==null?"还没备份过。":bkDays<=0?"今天备份过。":`上次备份 ${bkDays} 天前。`;
   // the "easy" view: what it takes, per day, to land every live goal on time
@@ -1960,6 +2025,8 @@ function renderOverview(){
   else if(expiredGoals.length){ const x=expiredGoals[0]; ns={tone:"warn",ic:"clock",t:`「${esc(x.g.name)}」已经到期`,d:`还差 ${rm(x.g.target-x.g.saved)}。设一个新日期，每月要存的钱会重新算。${expiredGoals.length>1?`另外还有 ${expiredGoals.length-1} 个目标到期。`:""}`,b:"设新日期",f:()=>openEdit(x.g)}; }
   else if(efOpen) ns={tone:"info",ic:"shield",t:"救命的钱还没存满",d:`${rm(efOpen.saved)} / ${rm(efOpen.target)}。Brader 的顺序：先存满它，再存其他目标。`,b:"查看",f:()=>go("goal",efOpen.id)};
   else if(hiDebts().length){ const H=hiDebts(); ns={tone:"warn",ic:"alert",t:"先还高利息债",d:`还欠 ${rm(H.reduce((a,d)=>a+d.bal,0))}，先还「${esc(H[0].name)}」（${H[0].rate}% 利息）。`,b:"看还债计划",f:()=>go("debt")}; }
+  else if(lateX){ const d=lateOf(lateX), nw=lateX.want0-lateX.a0>=.5, w=flowWhen(lateX);
+    ns={tone:"warn",ic:"clock",t:`「${esc(lateX.g.name)}」${d===Infinity?"会存不够":`会晚 ${durTxt(d)}`}`,d:`照你排的先后，${nw?`它每月只分到 ${rm(lateX.a0)}（要 ${rm(lateX.want0)}）`:"后面几个月它会分不够钱"}。${w?`可以把期限改到 ${ymLabel(w)}，`:"可以延后期限，"}或者把它拖到前面。`,b:"查看",f:()=>go("goal",lateX.id)}; }
   else if(worst) ns={tone:"warn",ic:"alert",t:`「${esc(worst.g.name)}」进度落后`,d:`照计划现在应该有 ${rm(worst.s.expected)}，补 ${rm(worst.s.expected-worst.g.saved)} 就回到计划。`,b:"更新进度",f:()=>openUpdate(worst.g)};
   else if(stale) ns={tone:"info",ic:"clock",t:`「${esc(stale.g.name)}」${stale.s.stale} 天没更新`,d:"每个月更新一次进度，落后了马上看得到。",b:"更新进度",f:()=>openUpdate(stale.g)};
   else if(!S.income) ns={tone:"info",ic:"user",t:"填收入和开销",d:"就能看到每个月够不够存，也能做财务健康检查。",b:"我的资料",f:openProfile};
@@ -1974,10 +2041,10 @@ function renderOverview(){
     const base=Math.max(surplus,monthly,1), use=surplus>0?Math.round(monthly/surplus*100):null;
     flow=`<div class="flowhead"><div><span class="l">每月盈余</span><b>${tk("ov-sur",surplus)}</b></div><div class="r"><span class="l">目标用掉</span><b class="${use!=null&&use<=100?"gd":"wn"}">${use==null?"—":tk("ov-use",use,"pct")}</b></div></div>
       <p class="sub">净收入 ${rm(S.income)} − 开销 ${rm(S.expense)} · <button class="linkbtn" type="button" id="ovSpend">帮我算开销</button></p>
-      ${flowBeamHTML(planS,surplus,monthly)}
-      <div class="alloc">${planS.map((x,i)=>`<span title="${esc(x.g.name)}" style="width:${((x.s.budget||x.s.monthly)/base*100).toFixed(2)}%;background:${PALETTE[i%PALETTE.length]}"></span>`).join("")}</div>
-      <div class="allocleg">${planS.map((x,i)=>`<span><i style="background:${PALETTE[i%PALETTE.length]}"></i>${esc(x.g.name)} ${rm(x.s.budget||x.s.monthly)}</span>`).join("")}</div>
-      <p class="say">${surplus<=0?"每个月花的比赚的多，现金流是 negative。要省，先 cut 最大的开销（房子、车的 installment），大开销都 cut 完还不够，才 cut 咖啡。":monthly<=surplus?`所有目标每月 ${rm(monthly)}，还剩 ${rm(surplus-monthly)} 可以放进长期投资。`:`所有目标每月要 ${rm(monthly)}，超出盈余 ${rm(monthly-surplus)}。目标太多，有些可以延迟甚至取消；或者想办法提高收入：Cut 消费是有极限的，但是提高收入却没有极限。${far?` 建议先延后「${esc(far.name)}」（期限最远）。 <button class="linkbtn" type="button" id="ovFar">暂停这个目标</button>`:""}`}</p>
+      ${flowBeamHTML(F)}
+      <div class="alloc">${flowParts(F).map(p=>`<span title="${esc(p.n)}" style="width:${(p.a/base*100).toFixed(2)}%;background:${p.c}"></span>`).join("")}</div>
+      ${forderHTML(F)}
+      <p class="say">${surplus<=0?"每个月花的比赚的多，现金流是 negative。要省，先 cut 最大的开销（房子、车的 installment），大开销都 cut 完还不够，才 cut 咖啡。":monthly<=surplus?(F.DI?`所有目标每月 ${rm(monthly)}，多还高利息债每月 ${rm(F.DI.need)}。${F.left0>=1?`还剩 ${rm(F.left0)}，也${F.DI.wait0?"先放进救命的钱，存满后拿去多还债":"拿去多还高利息债"}。`:""}`:`所有目标每月 ${rm(monthly)}，还剩 ${rm(surplus-monthly)} 可以放进长期投资。`):`所有目标每月要 ${rm(monthly)}，超出盈余 ${rm(monthly-surplus)}。照你排的先后，排后面的会变晚。目标太多，有些可以延迟甚至取消；或者想办法提高收入：Cut 消费是有极限的，但是提高收入却没有极限。${far?` 可以先暂停排最后的「${esc(far.name)}」。 <button class="linkbtn" type="button" id="ovFar">暂停这个目标</button>`:""}`}</p>
       ${expiredGoals.length?`<p class="say">${expiredGoals.length===1?`「${esc(expiredGoals[0].g.name)}」`:`${expiredGoals.length} 个目标`}已经到期，没有算在上面。设新日期后，才会重新算每月要存多少。 <button class="linkbtn" type="button" id="ovExp">设新日期</button></p>`:""}`;
   }
   // 财务健康检查（Brader）：开销 ≤ 85%、DSR ≤ 35%、救命的钱够几个月、储蓄率 ≥ 20%
@@ -2024,29 +2091,111 @@ function renderOverview(){
   $("#main").querySelectorAll(".grow,.orb").forEach(b=>b.onclick=()=>go("goal",b.dataset.id));
   bindQuick(); bindTM(stats); bindKeep();
   const on=(id,f)=>{ const el=$(id); if(el) el.onclick=f; };
-  on("#ovAll",()=>go("goals")); on("#ovSet",openProfile); on("#ovSpend",()=>openSpend()); on("#ovBak",openBackup); on("#ovAsk",()=>go("ask"));
+  on("#ovAll",()=>go("goals")); on("#ovOrd",()=>go("goals")); on("#ovSet",openProfile); on("#ovSpend",()=>openSpend()); on("#ovBak",openBackup); on("#ovAsk",()=>go("ask"));
   on("#ovFar",()=>confirmPause(far)); on("#ovExp",()=>openEdit(expiredGoals[0].g));
 }
 
 /* ================= 我的目标 ================= */
 function renderGoals(){
   if(isPh()){ renderGoalsPh(); return; }
-  const act=activeSorted();
+  const act=activeSorted(), vis=visOrder(), F=flowNow();
   $("#main").innerHTML=`
-    <div class="phead"><div><h1>我的目标</h1><div class="meta"><span>${act.length} 个进行中</span><span>点一个目标看详细计划</span></div></div>
+    <div class="phead"><div><h1>我的目标</h1><div class="meta"><span>${act.length} 个进行中</span><span>${vis.length>1?"拖动卡片排先后：每个月的钱，排前面的先拿够":"点一个目标看详细计划"}</span></div></div>
       <div class="acts"><button class="btn pri" type="button" id="gAdd">${svgI("plus")}新目标</button></div></div>
-    ${act.length?`<div class="gcards">${act.map(g=>{ const s=stat(g), left=Math.max(0,g.target-g.saved);
+    ${act.length?`${orderNoteHTML(F)}<div class="gcards" id="gOrder" aria-describedby="rkHelp">${vis.map((id,i)=>{ if(id===DROW) return debtCardHTML(F,i);
+      const g=GOALS.find(x=>x.id===id), s=stat(g), left=Math.max(0,g.target-g.saved), x=F.items.find(y=>y.id===id);
       return `<div class="gcwrap" data-id="${g.id}"><button class="card gcard tilt" type="button" data-id="${g.id}">${glareHTML}
-        <span class="top"><span class="gic" aria-hidden="true">${icon(g.type)}</span><span style="min-width:0;flex:1"><span class="gname">${esc(g.name)}</span><small>${TYPE_LABEL[g.type]} · 截止 ${ymLabel(g.deadline)}</small></span></span>
+        <span class="top"><span class="rk" data-rk aria-hidden="true">${i+1}</span><span class="gic" aria-hidden="true">${icon(g.type)}</span><span style="min-width:0;flex:1"><span class="gname">${esc(g.name)}</span><small>${TYPE_LABEL[g.type]} · 截止 ${ymLabel(g.deadline)}</small></span></span>
         <span class="mid"><span class="ring sm">${gauge(s.pct,"gc-"+g.id)}<span class="ring-c"><b>${Math.round(s.pct*100)}%</b></span></span>
           <span class="kv"><span class="k">已存</span><span class="v">${rm(g.saved)}</span><span class="k">还差</span><span class="v cy">${left>0?rm(left):"金额够了"}</span><span class="k">每月</span><span class="v">${isExp(g,s)?'<span class="wn">已到期</span>':rm(s.budget||s.monthly)}</span></span></span>
-        <span class="gcfoot"><span class="pill ${s.st.c}">${s.st.t}</span>${s.stale?` <span class="warnline">${s.stale} 天没更新</span>`:""}</span></button>${qaddBtn(g,true)}</div>`; }).join("")}
-      <button class="card gcard add" type="button" id="gAdd2">${svgI("plus")}新目标</button></div>`
+        <span class="gcfoot"><span class="pill ${s.st.c}">${s.st.t}</span> <span data-lt>${lateTag(x)}</span>${s.stale?` <span class="warnline">${s.stale} 天没更新</span>`:""}</span></button>${qaddBtn(g,true)}</div>`; }).join("")}
+      <button class="card gcard add" type="button" id="gAdd2">${svgI("plus")}新目标</button></div><p class="vh" id="rkHelp">按住卡片拖动排先后；用键盘的话，按 Alt 加上下键。</p>`
     :`<section class="card empty"><div class="big">${svgI("target")}</div><h2>还没有进行中的目标</h2><p>写一句你想完成的事，系统会帮你算每个月要存多少。</p><p><button class="btn pri" type="button" id="gAdd3">${svgI("plus")}新目标</button></p></section>`}`;
-  $("#main").querySelectorAll(".gcard[data-id]").forEach(b=>b.onclick=()=>go("goal",b.dataset.id));
+  $("#main").querySelectorAll(".gcard[data-id]").forEach(b=>b.onclick=()=>go(b.dataset.id===DROW?"debt":"goal",b.dataset.id===DROW?null:b.dataset.id));
   ["#gAdd","#gAdd2","#gAdd3"].forEach(id=>{ const el=$(id); if(el) el.onclick=()=>openAdd(""); });
-  bindQuick();
+  $("#main").querySelectorAll("[data-debtx]").forEach(b=>b.onclick=e=>{ e.stopPropagation(); openDebtX(); });
+  const os=$("#ordSet"); if(os) os.onclick=openProfile;
+  bindQuick(); const box=$("#gOrder"); if(box) bindReorder(box,".gcwrap[data-id]");
 }
+// 有目标分不够的时候，列表上面说一句（没填收入就请他填）
+function orderNoteHTML(F){ if(visOrder().length<2) return "";
+  if(!F.hasI) return `<div class="tip" id="ordTip"><span>每个月的钱照这个先后分。填了收入和开销，就能看到哪个目标会因为钱不够变晚。</span><button class="btn ghost sm" type="button" id="ordSet">填收入和开销</button></div>`;
+  const L=F.items.filter(x=>lateOf(x)>=1); if(!L.length) return "";
+  return `<div class="tip" id="ordTip"><span>每个月的盈余照这个先后分，排后面的 ${L.length} 个目标分不够，会变晚。把重要的拖到前面，或者把期限延后。</span></div>`; }
+function debtCardHTML(F,i){ const x=F.DI, H=hiDebts(); if(!x) return "";
+  const short=x.want0-x.a0>=.5, when=isFinite(x.fin)?ymLabel(addMonthsYM(x.fin)):"还不清";
+  return `<div class="gcwrap" data-id="${DROW}"><button class="card gcard gdebt tilt" type="button" data-id="${DROW}">${glareHTML}
+    <span class="top"><span class="rk" data-rk aria-hidden="true">${i+1}</span><span class="gic" aria-hidden="true">💳</span><span style="min-width:0;flex:1"><span class="gname">多还高利息债</span><small>${H.length} 笔超过 ${DEBT_HI}% 利息 · 还欠 ${rm(H.reduce((a,d)=>a+d.bal,0))}</small></span></span>
+    <span class="mid"><span class="kv"><span class="k">每月多还</span><span class="v">${rm(x.need)}</span><span class="k">这个月分到</span><span class="v${short?" wn":""}" data-da>${x.wait0?"—":rm(x.p0)}</span><span class="k">预计还清</span><span class="v">${when}</span></span></span>
+    <span class="gcfoot" data-lt>${x.wait0?'<span class="pill paused">救命的钱存满后才开始多还</span>':short?'<span class="pill warn">分不够</span>':""}</span></button>
+    <button class="qadd oncard" type="button" data-debtx>改金额</button></div>`; }
+
+/* ================= 拖动排先后 =================
+   电脑：按住卡片拖（移动超过 6px 才算拖，不然就是点开）。手机：长按 0.42 秒再拖；在那之前手指动了，就当作滑页面或左滑暂停。
+   键盘：Alt + 上下键。拖的时候排名和「晚 N 个月」即时更新，放开才保存，可以撤销。 */
+let REORD=false;
+function ltFor(id,F){ if(id!==DROW) return lateTag(F.items.find(y=>y.id===id));
+  const x=F.DI; return !x?"":x.wait0?'<span class="pill paused">救命的钱存满后才开始多还</span>':x.want0-x.a0>=.5?'<span class="pill warn">分不够</span>':""; }
+function bindReorder(box,sel){
+  const els=()=>[...box.querySelectorAll(sel)], ids=()=>els().map(e=>e.dataset.id), start=ids();
+  let D=null, noClick=0, raf=0;
+  const put=(el,i,id,F)=>{ const rk=el.querySelector("[data-rk]"); if(rk) rk.textContent=i+1; const lt=el.querySelector("[data-lt]"); if(lt) lt.innerHTML=ltFor(id,F); };
+  const paint=()=>{ const F=flowSim({vis:ids()}), L=els(); L.forEach((el,i)=>put(el,i,el.dataset.id,F)); if(D) put(D.gh,L.indexOf(D.el),D.el.dataset.id,F); }; // 拖着的那张也跟着变
+  const hit=()=>{ const L=els(); for(const o of L){ if(o===D.el) continue; const r=o.getBoundingClientRect();
+      if(D.x>=r.left&&D.x<=r.right&&D.y>=r.top&&D.y<=r.bottom){ if(L.indexOf(o)>L.indexOf(D.el)) o.after(D.el); else o.before(D.el); paint(); return; } } };
+  const move=(x,y)=>{ D.x=x; D.y=y; D.gh.style.transform=`translate3d(${(x-D.x0).toFixed(1)}px,${(y-D.y0).toFixed(1)}px,0)`; hit(); };
+  const scroll=()=>{ if(!D) return; const sc=pzSC(), top=isPh()?96:64, bot=innerHeight-(isPh()?150:64); let v=0;
+    if(D.y<top) v=-Math.min(14,(top-D.y)/4+2); else if(D.y>bot) v=Math.min(14,(D.y-bot)/4+2);
+    if(v){ if(sc) sc.scrollTop+=v; else scrollBy(0,v); hit(); } raf=requestAnimationFrame(scroll); };
+  const begin=(el,x,y)=>{ REORD=true; const r=el.getBoundingClientRect(), gh=el.cloneNode(true);
+    gh.className+=" rghost"; gh.removeAttribute("data-id"); gh.setAttribute("aria-hidden","true"); gh.querySelectorAll("[id]").forEach(n=>n.removeAttribute("id"));
+    [gh,el].forEach(r=>r.querySelectorAll(".pz-pressed").forEach(n=>n.classList.remove("pz-pressed"))); // 长按时的按压效果不要带进去
+    Object.assign(gh.style,{left:r.left+"px",top:r.top+"px",width:r.width+"px",height:r.height+"px"}); document.body.appendChild(gh);
+    el.classList.add("rph"); document.documentElement.classList.add("reord"); D={el,gh,x0:x,y0:y,x,y}; raf=requestAnimationFrame(scroll); };
+  const end=ok=>{ if(!D) return; cancelAnimationFrame(raf); const {el,gh}=D; D=null; REORD=false; noClick=Date.now();
+    document.documentElement.classList.remove("reord"); gh.remove(); el.classList.remove("rph");
+    const now=ids(); if(now.join()===start.join()) return; if(ok) commitOrder(now,start); else render(); };
+  box.addEventListener("click",e=>{ if(Date.now()-noClick<450){ e.preventDefault(); e.stopPropagation(); } },true);
+  box.addEventListener("contextmenu",e=>{ if(REORD||e.target.closest(sel)&&isPh()) e.preventDefault(); });
+  const skip=t=>t.closest(".qadd,[data-debtx],.pz-act,input,select,textarea");
+  // 电脑：鼠标、触控笔
+  box.addEventListener("pointerdown",e=>{ if(e.pointerType==="touch"||e.button!==0) return; const el=e.target.closest(sel); if(!el||skip(e.target)) return; const x0=e.clientX, y0=e.clientY;
+    const mv=ev=>{ if(!D){ if(Math.hypot(ev.clientX-x0,ev.clientY-y0)<6) return; begin(el,x0,y0); } ev.preventDefault(); move(ev.clientX,ev.clientY); };
+    const off=ok=>{ removeEventListener("pointermove",mv); removeEventListener("pointerup",up); removeEventListener("pointercancel",no); end(ok); }, up=()=>off(true), no=()=>off(false);
+    addEventListener("pointermove",mv); addEventListener("pointerup",up); addEventListener("pointercancel",no); });
+  // 手机：长按再拖
+  box.addEventListener("touchstart",e=>{ if(e.touches.length!==1||D) return; const el=e.target.closest(sel); if(!el||skip(e.target)||el.classList.contains("open")) return;
+    const t=e.touches[0], x0=t.clientX, y0=t.clientY; let lx=x0, ly=y0;
+    const tm=setTimeout(()=>{ begin(el,lx,ly); el.classList.add("rlift"); setTimeout(()=>el.classList.remove("rlift"),300); },420);
+    const mv=ev=>{ const p=ev.touches[0]; lx=p.clientX; ly=p.clientY; if(!D){ if(Math.hypot(lx-x0,ly-y0)>8) off(null); return; } if(ev.cancelable) ev.preventDefault(); move(lx,ly); };
+    const off=ok=>{ clearTimeout(tm); document.removeEventListener("touchmove",mv,{capture:true}); document.removeEventListener("touchend",up,true); document.removeEventListener("touchcancel",no,true); if(ok!=null) end(ok); }, up=()=>off(true), no=()=>off(false);
+    document.addEventListener("touchmove",mv,{passive:false,capture:true}); document.addEventListener("touchend",up,true); document.addEventListener("touchcancel",no,true); },{passive:true});
+  // 键盘：Alt + 上下（左右）键
+  box.addEventListener("keydown",e=>{ if(!e.altKey||!/^Arrow(Up|Down|Left|Right)$/.test(e.key)) return; const el=e.target.closest(sel); if(!el) return; e.preventDefault();
+    const L=els(), i=L.indexOf(el), j=i+(/Up|Left/.test(e.key)?-1:1); if(j<0||j>=L.length) return; if(j>i) L[j].after(el); else L[j].before(el);
+    const id=el.dataset.id, bid=box.id; commitOrder(ids(),start); const nb=document.getElementById(bid), f=nb&&nb.querySelector(`[data-id="${id}"] button`); if(f) f.focus(); });
+}
+function commitOrder(now,before){ const snap=snapState(), view={page:VIEW.page,id:VIEW.id};
+  const efI=L=>L.findIndex(id=>{ const g=GOALS.find(x=>x.id===id); return !!g&&g.type==="emergency"&&g.saved<g.target; });
+  const goalAbove=(L,i)=>L.slice(0,i).some(id=>{ const g=GOALS.find(x=>x.id===id); return !!g&&g.type!=="emergency"; });
+  const e0=efI(before), e1=efI(now), d0=before.indexOf(DROW), d1=now.indexOf(DROW);
+  setVisOrder(now); if(hiDebts().length) rebaseDebt(); save(); render();
+  offerUndo(e1>0&&e1>e0?"救命的钱排到后面了。Brader 的顺序：先存满救命的钱，再存其他目标"
+    :d1>d0&&goalAbove(now,d1)?`多还高利息债排到后面了。Brader 的顺序：先还清超过 ${DEBT_HI}% 利息的债，再存其他目标`:"先后顺序已更新",snap,view); }
+function openDebtX(){ const auto=debtAuto(), cur=debtXOf(), set=typeof S.debtX==="number";
+  modal({title:"每月多还多少？",sub:"高利息债除了最低还款，每个月再多还这么多。排在它后面的目标，拿剩下的钱。",form:"dxForm",
+    body:`<div class="field" id="fDX"><label for="dxAmt">每月多还</label><div class="inp"><span>RM</span><input id="dxAmt" type="number" inputmode="decimal" min="0" step="any" value="${Math.round(cur)}"></div><div class="ferr"></div></div>
+      <p class="sub" id="dxOut" aria-live="polite" style="margin:0 0 10px"></p><p class="sub" style="margin:0">默认是 12 个月还清要多还的钱：<b>${rm(auto)}</b>。${set?` <button class="linkbtn" type="button" id="dxAuto">用默认</button>`:""}</p>`,
+    foot:`<button class="btn ghost" type="button" id="dxNo">取消</button><button class="btn pri" type="submit" id="dxOk">保存</button>`,focus:"#dxAmt",
+    onMount:()=>{ $("#dxNo").onclick=closeSheet;
+      const out=()=>{ const v=parseFloat($("#dxAmt").value); if(!(v>=0)){ $("#dxOut").textContent=""; return; } const F=flowSim({debtX:v}), D=F.DI, L=F.items.filter(x=>lateOf(x)>=1);
+        $("#dxOut").innerHTML=D?`${isFinite(D.fin)?`照这个金额，预计 <b>${ymLabel(addMonthsYM(D.fin))}</b> 还清`:'<span class="wn">照这个金额还不清</span>'}${L.length?`；${L.slice(0,3).map(x=>itemName(x.id)).join("、")}${L.length>3?" 等":""}会变晚`:""}。`:""; };
+      $("#dxAmt").addEventListener("input",()=>{ fieldErr("#fDX",""); out(); }); out();
+      const done=(msg,snap,view)=>{ rebaseDebt(); save(); closeSheet(); render(); offerUndo(msg,snap,view); };
+      const ab=$("#dxAuto"); if(ab) ab.onclick=()=>{ const snap=snapState(), view={page:VIEW.page,id:VIEW.id}; delete S.debtX; done("每月多还改回默认：12 个月还清",snap,view); };
+      $("#dxForm").onsubmit=e=>{ e.preventDefault(); const r=readNum("#dxAmt",{required:true,min:0,label:"金额"}); if(r.err){ fieldErr("#fDX",r.err); $("#dxAmt").focus(); return; }
+        const snap=snapState(), view={page:VIEW.page,id:VIEW.id}; S.debtX=Math.round(r.v); done(`每月多还改成 ${rm(S.debtX)}`,snap,view); };
+    }}); }
 
 /* ================= 快速存入：一按就存，「+RM100」飞进圆环 ================= */
 const pctOf=(g,v)=>v>=g.target?100:Math.max(0,Math.min(99,Math.floor(v/Math.max(1,g.target)*100)));
@@ -2124,12 +2273,14 @@ function flyAmount(text,from,toEl,cb){
 let TMN=null, TMRAF=0;
 // fin = months from now until the goal is fully saved. Following the plan (no own monthly amount) it lands on the deadline;
 // with an own amount, or when interest alone gets there, count the months like the goal page does.
-function tmPlans(stats){ return stats.map(({g,s})=>{ const base=planM(g,s); let fin, lbl;
+// 照先后顺序会晚或会早的目标，用每月真正分到的钱（flowSim 的逐月余额）
+function tmPlans(stats){ const F=flowNow(); return stats.map(({g,s})=>{ const base=planM(g,s), x=F.items.find(y=>y.id===g.id), dd=lateOf(x); let fin, lbl, ser=null;
   if(g.saved>=g.target) fin=0;
+  else if(x&&(dd>=1||dd<=-1)){ ser=x.ser; fin=!isFinite(x.fin)?Infinity:!s.budget&&s.left>0?s.left+dd:x.fin; lbl=isFinite(fin)?ymLabel(flowWhen(x)):""; }
   else if(!s.budget&&s.monthly>0&&s.left>0){ fin=s.left; lbl=ymLabel(g.deadline); }
   else fin=monthsToReach(g.target,g.saved,base,s.r);
-  return {g,base,r:s.r,fin,lbl:lbl||(isFinite(fin)?ymLabel(addMonthsYM(fin)):"")}; }); }
-const tmVal=(p,n)=>p.fin<=n?p.g.target:Math.min(p.g.target,fv(p.g.saved,p.base,p.r,n));
+  return {g,base,r:s.r,fin,ser,lbl:lbl||(isFinite(fin)?ymLabel(addMonthsYM(fin)):"")}; }); }
+const tmVal=(p,n)=>p.fin<=n?p.g.target:p.ser?Math.min(p.g.target,p.ser[Math.min(Math.round(n),p.ser.length-1)]):Math.min(p.g.target,fv(p.g.saved,p.base,p.r,n));
 function tmHTML(stats){
   const P=tmPlans(stats); if(!P.length||P.every(p=>p.fin===0)) return "";
   let M=12; stats.forEach(({s})=>{ M=Math.max(M,Math.ceil(s.left)); }); P.forEach(p=>{ if(isFinite(p.fin)) M=Math.max(M,Math.ceil(p.fin)); }); M=Math.min(600,M);
@@ -2240,6 +2391,9 @@ function renderGoal(){
       finish=ymLabel(addMonthsYM(s.finishN)); finishSub=diff>=1?`<span class="gd">比期限早 ${durTxt(diff)}</span>`:diff<=-1?`<span class="wn">比期限晚 ${durTxt(-diff)}</span>`:`期限 ${ymLabel(g.deadline)}`; }
     else { eta="存不够"; etaSub=`每月 ${rm(s.budget)} 追不上，改成 ${rm(s.monthly)} 就能准时`; finish="存不够"; finishSub=`改成每月 ${rm(s.monthly)} 就能准时`; } }
   else { eta=durTxt(s.left); etaSub=`照每月 ${rm(s.monthly)}，${ymLabel(g.deadline)} 准时抵达`; finish=ymLabel(g.deadline); finishSub="照计划准时完成"; }
+  // 照先后顺序：会晚或会早几个月（只显示）
+  const FX=g.status==="active"&&!reached&&s.left>0?flowOf(g.id):null, FD=lateOf(FX);
+  if(FX&&(FD>=1||FD<=-1)){ const nt=FD===Infinity?' · <span class="wn">照先后顺序存不够</span>':FD>=1?` · <span class="wn">照先后顺序会晚 ${durTxt(FD)}</span>`:` · <span class="gd">别的目标存完，钱转过来会早 ${durTxt(-FD)}</span>`; etaSub+=nt; finishSub+=nt; }
   let line;
   if(isDone) line="任务完成。这一个，是你自己存出来的。";
   else if(isPaused) line="暂停不是放弃。准备好了再按「恢复」，从这里继续。";
@@ -2303,6 +2457,7 @@ function renderGoal(){
     </section>
 
     <details class="sec" data-sec="plan"${SEC.plan?" open":""}><summary>Brader 方案：这笔钱放哪里<span class="hint">${s.O.name} · ${s.O.range}</span></summary><div class="body">
+      ${flowTipHTML(g,s)}
       <p class="sub" style="margin:0 0 14px">按目标期限（${durTxt(total)}）推荐。选一个，上面的每月金额、里程碑和下面的步骤会跟着变。</p>
       <div class="budget"><label for="budget">我每个月可以放</label><div class="inp" style="width:170px"><span>RM</span><input id="budget" type="number" inputmode="decimal" min="0" step="any" placeholder="${HIDE?"****":isExp(g,s)?"":Math.round(s.monthly)}" value="${g.budget||""}"></div><span class="dim" style="font-size:13px">不填就照「每月需要存」算</span></div>
       ${WI?`<div class="whatif" id="whatif">
@@ -2366,14 +2521,36 @@ function renderGoal(){
   $("#main").querySelectorAll("[data-log]").forEach(b=>b.onclick=()=>{ const l=g.log.find(x=>x.id===b.dataset.log); if(!l) return;
     confirmBox({title:"删除这笔记录？",text:`${l.d}　${l.k==="set"?"更新总额 = "+rm(l.a):(l.a>=0?"存入 +":"取出 ")+rm(l.a)}`,sub:"删除后，已存金额会重新计算。",ok:"删除记录",danger:true,
       onOk:()=>{ const snap=snapState(), view={page:VIEW.page,id:VIEW.id}; g.log=g.log.filter(x=>x.id!==l.id); recomputeSaved(g); save(); render(); offerUndo("记录已删除",snap,view); }}); });
+  on("#ftOrd",()=>go("goals")); on("#ftSet",openProfile);
+  on("#ftDue",()=>{ const ym=$("#ftDue").dataset.ym, snap=snapState(), view={page:VIEW.page,id:VIEW.id}; g.deadline=ym; save(); render(); offerUndo(`期限改到 ${ymLabel(ym)}`,snap,view); });
+  on("#ftAmt",()=>{ const v=+$("#ftAmt").dataset.v, snap=snapState(), view={page:VIEW.page,id:VIEW.id}; g.budget=v; save(); render(); offerUndo(`每月金额改成 ${rm(v)}`,snap,view); });
   bindChart(g,s);
   bindTodo(g,steps); bindKeep();
   if(WI) bindWhatIf(g,s,base,WI,wiNow);
   if(isPh()) pzGoal(g,s,left);
 }
+// 目标页「方案」最上面：照先后顺序分到多少，会晚的话给一个按了才改的按钮
+function flowTipHTML(g,s){ if(g.status!=="active"||g.saved>=g.target||isExp(g,s)) return "";
+  const F=flowNow(), x=F.items.find(y=>y.id===g.id), vis=visOrder(), rank=vis.indexOf(g.id)+1, many=vis.length>1; if(!x) return "";
+  const where=many?`排第 ${rank}（共 ${vis.length} 个）`:"";
+  if(!F.hasI) return many?`<div class="flowtip" id="flowTip">${where}。填了收入和开销，就能看到照先后顺序会不会变晚。 <button class="linkbtn" type="button" id="ftSet">填收入和开销</button></div>`:"";
+  const d=lateOf(x), w=flowWhen(x), short=x.want0-x.a0>=.5, gift=x.p0-x.a0>=.5;
+  if(d>=1){ let btn="";
+    if(s.budget){ if(x.a0>=1) btn=`<button class="btn pri sm" type="button" id="ftAmt" data-v="${Math.round(x.a0)}">每月金额改成分得到的 ${rm(x.a0)}</button>`; }
+    else { const fix=d===Infinity?null:fixDue(g,w); if(fix) btn=`<button class="btn pri sm" type="button" id="ftDue" data-ym="${fix}">把期限改到 ${ymLabel(fix)}</button>`; }
+    return `<div class="flowtip warn" id="flowTip"><b>照先后顺序（${where||"排第 1"}），${short?`现在每月只分到 ${rm(x.a0)}，要 ${rm(x.want0)}`:"后面几个月会分不够钱"}</b>，${d===Infinity?"照现在存不够。":`会晚 ${durTxt(d)}：预计 ${ymLabel(w)} 才存够。`}<div class="fbtns">${btn}<button class="btn ghost sm" type="button" id="ftOrd">去排先后</button></div></div>`; }
+  if(d<=-1){ const e=F.ev.find(v=>v.to===g.id||v.fill.some(f=>f.id===g.id)), why=gift?`多还高利息债的 ${rm(x.p0-x.a0)} 每月先放进这里（先存满救命的钱），`:e?`${e.id===DROW?"高利息债还清":itemName(e.id)+"存完"}后，它每月的钱会转过来，`:"";
+    return `<div class="flowtip good" id="flowTip">${where?where+"。":""}${why}预计 <b>${ymLabel(w)}</b> 存够，<b class="gd">早 ${durTxt(-d)}</b>。</div>`; }
+  return many?`<div class="flowtip" id="flowTip">${where}，每月 ${rm(x.want0)} 分得到，照计划准时。 <button class="linkbtn" type="button" id="ftOrd">去排先后</button></div>`:"";
+}
+// 期限要延到哪个月，照先后顺序才分得够（照计划的目标：期限越后，每月要存的越少）
+function fixDue(g,w){ const keep=g.deadline; let ym=w&&w>keep?w:ymPlus(keep,1);
+  try{ for(let i=0;i<120;i++){ g.deadline=ym; const x=flowSim().items.find(y=>y.id===g.id); if(x&&!(lateOf(x)>=1)) return ym; ym=ymPlus(ym,1); } } finally{ g.deadline=keep; }
+  return null; }
 // snap/view (optional): the state before the 存入 that finished the goal, so 撤销 takes back both
 function completeGoal(g,snap,view,quiet){ if(!snap){ snap=snapState(); view={page:VIEW.page,id:VIEW.id}; }
-  g.status="done"; g.doneAt=today(); save(); if(!quiet){ celebrate(); sfx("complete"); } go("done"); offerUndo("恭喜！「"+g.name+"」完成了",snap,view); }
+  const F0=flowNow(), R=rollPlan(g); // 它每月的钱：先补给分不够的，剩下的转去排第一、还在存的
+  g.status="done"; g.doneAt=today(); applyRoll(R); save(); if(!quiet){ celebrate(); sfx("complete"); } go("done"); offerUndo("恭喜！「"+g.name+"」完成了"+(R?"。"+rollTxt(R,F0,flowNow()):""),snap,view); }
 function bindWhatIf(g,s,base,WI,wiNow){
   const rg=$("#wiRange"); if(!rg) return;
   const WPS=wpsOf(g);
@@ -2418,8 +2595,10 @@ function bindWhatIf(g,s,base,WI,wiNow){
 function resumeGoal(g){ g.status="active"; save(); if(deadlineDate(g.deadline)<new Date()){ toast("期限已过，请设一个新日期","info"); if(VIEW.page!=="goal"||VIEW.id!==g.id) go("goal",g.id); else render(); openEdit(g); } else { toast("已恢复，目标回到「我的目标」"); if(VIEW.page==="goal") render(); else go("goal",g.id); } }
 function confirmPause(g){ if(!g) return; confirmBox({title:"暂停这个目标？",text:`「${esc(g.name)}」`,sub:"暂停后不会算进每月要存的钱，也不会显示落后。存了的钱和所有记录都会保留，随时可以恢复。",ok:"暂停目标",
   onOk:()=>{ g.status="paused"; g.pausedAt=today(); save(); toast("已暂停，移到「暂停中的目标」"); render(); }}); }
-function confirmDelete(g){ confirmBox({title:"删除目标",text:"确定要删除这个目标吗？此操作无法撤销。",sub:`「${esc(g.name)}」和它的 ${g.log.length} 笔存款记录都会一起删除。`,ok:"删除",danger:true,
-  onOk:()=>{ const back=g.status==="done"?"done":g.status==="paused"?"paused":"goals"; GOALS=GOALS.filter(x=>x.id!==g.id); save(); toast("已删除「"+g.name+"」"); go(back); }}); }
+function confirmDelete(g){ confirmBox({title:"删除目标",text:"确定要删除这个目标吗？",sub:`「${esc(g.name)}」和它的 ${g.log.length} 笔存款记录都会一起删除。删除后 5 秒内可以撤销。`,ok:"删除",danger:true,
+  onOk:()=>{ const snap=snapState(), view={page:VIEW.page,id:VIEW.id}, back=g.status==="done"?"done":g.status==="paused"?"paused":"goals", F0=flowNow(), R=rollPlan(g);
+    GOALS=GOALS.filter(x=>x.id!==g.id); if(Array.isArray(S.order)) S.order=S.order.filter(x=>x!==g.id); applyRoll(R); save(); go(back);
+    offerUndo("已删除「"+g.name+"」"+(R?"。"+rollTxt(R,F0,flowNow()):""),snap,view); }}); }
 
 /* ================= 问 Brader：「理财随便问」的回答方法 =================
    只搬回答的部分：没有开场白、念问题、学习大会 CTA、片尾、小红书标题和封面。
@@ -2597,14 +2776,14 @@ const ASK=[
    acts:[{l:"把这个变成目标",pri:1,goal:1,f:()=>openAdd("孩子以后读大学",{name:"孩子教育金",target:tot,months:n,how:`问 Brader 算的：孩子 ${P.age} 岁、19 岁入学，一年 ${rm(P.per)} × ${P.yrs} 年，通胀 4%`})}]}; }},
 {id:"order",cat:"plan",needs:"IE",q:"我有好几个目标，应该先存哪一个？",kw:"先后 顺序 几个目标 先存哪个 九大阶梯 优先 太多目标",rel:["ef","card","split"],
  ans:c=>{ const act=activeSorted(), st=act.map(g=>stat(g)), monthly=act.reduce((a,g,i)=>a+planM(g,st[i]),0), hasEF=c.efGoals.length>0, efOk=efFull();
-  const ef=c.efGoals.find(g=>g.status==="active"), far=act.filter(g=>g.type!=="emergency"&&!isExp(g,stat(g))).sort((a,b)=>b.deadline.localeCompare(a.deadline))[0], over=c.hasI&&c.hasE&&monthly>c.sur&&act.length>=2&&far;
+  const ef=c.efGoals.find(g=>g.status==="active"), far=act.filter(g=>g.type!=="emergency"&&!isExp(g,stat(g))).slice(-1)[0], over=c.hasI&&c.hasE&&monthly>c.sur&&act.length>=2&&far;
   return {open:"每一个 step 都有它的位置和顺序，不能乱跳，跳了后面就会出现问题。",
    tool:{t:"Brader 的理财九大阶梯",h:tSteps(["存三到六个月的救命钱，放 MMF","还清超过 8% 利息的债","买保险：medical card；有家庭再加人寿和意外","投资前先用满扣税额（PRS、SSPN、EPF 自愿供款）","抽薪水 10% 做退休投资，从 ETF 开始","孩子教育金","投资比例从 10% 慢慢提高到 25%","退休前还清房贷以外的债","做好传承：遗嘱、信托"],efOk?-1:0)},
    calc:[act.length?`你现在有 ${act.length} 个目标进行中，每个月一共要存 ${B(monthly)}${c.hasI&&c.hasE?`，你的每月盈余是 ${B(c.sur)}`:""}。`:"你现在还没有进行中的目标。"],
    fork:!hasEF?"你还没有「救命的钱」这个目标。它是第一步，还没存够之前，投资、买房买车都先放一边。"
      :!efOk&&ef?`你的救命的钱还没存满（${rm(ef.saved)} / ${rm(ef.target)}），先存满它，再存其他目标。`
-     :over?`所有目标每个月要 ${rm(monthly)}，超出盈余 ${B(monthly-c.sur)}。目标太多，有些可以延迟，建议先延后期限最远的「${esc(far.name)}」。`
-     :"救命的钱已经存满，其他目标照期限来，先到期的先存。",
+     :over?`所有目标每个月要 ${rm(monthly)}，超出盈余 ${B(monthly-c.sur)}。目标太多，有些可以延迟，建议先延后排最后的「${esc(far.name)}」。`
+     :"救命的钱已经存满，其他目标照你在「我的目标」排的先后：排前面的先拿够每个月的钱。",
    re:"很多人一开始就急着投资、买车，结果一生病、车坏，就要在亏损的时候被逼卖掉投资。",
    so:!hasEF?"所以，第一件事是建立救命的钱。":!efOk?"所以，先把救命的钱存满，其他目标可以慢慢来。":over?`所以，先延后「${esc(far.name)}」，让每个月要存的钱回到盈余以内。`:"所以，照九大阶梯的顺序走，每个月更新一次进度。",
    acts:!hasEF?[{l:"建立救命的钱",pri:1,f:()=>openAdd("存够救命的钱")}]:!efOk&&ef?[{l:"查看我的救命的钱",f:()=>go("goal",ef.id)}]:over?[{l:`暂停「${far.name.length>10?far.name.slice(0,10)+"…":far.name}」`,f:()=>confirmPause(far)}]:[{l:"看我的目标",f:()=>go("goals")}]}; }},
@@ -2880,8 +3059,19 @@ function ymOptions(sel){ const out=[]; let found=false; for(let i=1;i<=480;i++){
   if(sel&&!found) out.unshift(`<option value="${sel}" selected>${ymLabel(sel)}（已过）</option>`); return out.join(""); }
 
 /* ---- new goal ---- */
-function createGoal({type,text,name,target,deadline,saved,extra}){ const g=norm({id:uid(),type,text,name,target,deadline,start:today(),startAmt:saved,saved,log:[],extra,status:"active"});
-  GOALS.push(g); save(); closeSheet(); toast("目标已建立"); go("goal",g.id); if(fxOn()) setTimeout(()=>burstAt(innerWidth/2,innerHeight*.3,80,10),220); afterGoal(g); }
+function createGoal({type,text,name,target,deadline,saved,extra,pos}){ const g=norm({id:uid(),type,text,name,target,deadline,start:today(),startAmt:saved,saved,log:[],extra,status:"active"});
+  GOALS.push(g); insertAt(g.id,pos); save(); closeSheet(); toast("目标已建立"); go("goal",g.id); if(fxOn()) setTimeout(()=>burstAt(innerWidth/2,innerHeight*.3,80,10),220); afterGoal(g); }
+// 新目标排在第 pos 个：它分得到多少、会不会让别的目标或还债变晚
+function rankImpact(tmp,pos){ const F0=flowNow(), F1=flowSim({add:tmp,at:pos}), x=F1.items.find(y=>y.id===tmp.id);
+  if(!F1.hasI) return '<span class="dim">填了收入和开销，就能看到排这里会不会让别的目标变晚。</span>';
+  if(!x) return "";
+  const L=lateOf(x), me=x.want0-x.a0>=.5?`<span class="wn">这个目标每月只分到 ${rm(x.a0)}（要 ${rm(x.want0)}），${L===Infinity?"存不够":L>=1?`会晚 ${durTxt(L)}`:"后面会补上"}</span>`
+    :L>=1?`<span class="wn">现在分得到，但后面会分不够，会晚 ${durTxt(L)}</span>`:`<span class="gd">✓ 每月 ${rm(x.want0)} 分得到，准时</span>`;
+  const hurt=[]; F1.items.forEach(b=>{ if(b.id===tmp.id) return; const a=F0.items.find(y=>y.id===b.id); if(!a) return;
+    if(b.k==="g"){ const da=lateOf(a), db=lateOf(b); if(db===Infinity&&da!==Infinity) hurt.push(`${itemName(b.id)}会存不够`); else if(isFinite(db)&&db>=1&&db-Math.max(0,da)>=1) hurt.push(`${itemName(b.id)}会晚 ${durTxt(db-Math.max(0,da))}`); }
+    else if(isFinite(a.fin)&&b.fin-a.fin>=1) hurt.push(isFinite(b.fin)?`高利息债会晚 ${durTxt(b.fin-a.fin)}还清`:"高利息债会还不清"); });
+  return me+(hurt.length?`<ul>${hurt.slice(0,4).map(h=>`<li class="wn">${h}</li>`).join("")}${hurt.length>4?`<li class="wn">还有 ${hurt.length-4} 个会变晚</li>`:""}</ul>`:"");
+}
 function easeHTML(m,free){
   if(m<=0) return `<span class="ok">✓ 轻松：已经存够了</span>`;
   if(!S.income) return `<span class="dim">在「我的资料」填收入和开销，就能算难度</span>`;
@@ -2908,7 +3098,7 @@ function openAdd(prefill,over){
     foot:`<button class="btn ghost" type="button" id="aCancel">取消</button><button class="btn pri" type="submit" id="aSubmit">建立目标</button>`,
     focus:prefill?"#aSubmit":"#aText",
     onMount:()=>{
-      let G=null, gT=0;
+      let G=null, gT=0, POS=null; // POS = 排第几（从 0 算），默认最后
       const TOUCH=new Set(); // 用户自己改过的栏位，重新估算时不盖掉
       const moreLabel=()=>{ const b=$("#aFold"), open=!$("#aFields").hidden; b.setAttribute("aria-expanded",String(open));
         b.textContent=open?"收起":G?(G.rough?"填你的预算":"修改金额和日期"):"自己填名称、金额和日期"; };
@@ -2922,11 +3112,16 @@ function openAdd(prefill,over){
         const sur=S.income?S.income-S.expense:0, used=activeSorted().reduce((a,x)=>a+planM(x,stat(x)),0), free=sur-used;
         const ease=easeHTML(m,free);
         const canExt=[...$("#aDue").options].some(o=>o.value===due2), easy=m>0&&m2>0&&m2<m-.5&&canExt;
+        // 排第几：放在哪个前面，马上看会不会让别的目标变晚
+        const vis=visOrder(), N=vis.length; if(POS==null||POS>N) POS=N;
+        const tmp=N&&m>0?norm({id:"__new",type:typeNow(),name:$("#aName").value.trim()||"这个目标",target:t,saved:sv,startAmt:sv,start:today(),deadline:due,log:[],status:"active"}):null;
+        const rk=tmp?`<dt>排第几</dt><dd id="tRank"><div class="rkpick"><div class="inp"><select id="aPos" aria-label="排第几">${Array.from({length:N+1},(_,i)=>`<option value="${i}"${i===POS?" selected":""}>第 ${i+1}${i===N?"（最后）":`（${esc(itemName(vis[i]))}前面）`}</option>`).join("")}</select></div></div><div class="rkout" id="tRankOut">${rankImpact(tmp,POS)}</div></dd>`:"";
         box.innerHTML=`<div class="ares" id="aHero"><span class="an">${esc($("#aName").value.trim()||"这个目标")} · ${rm(t)} · ${ymLabel(due)}</span>${m<=0?`<b class="ad">已经存够了</b>`:`<b class="ad">每天存 ${dayRM(m)}</b><span class="am" id="tCalc">每月 ${rm(m)}${treat(m)?` · ${treat(m)}`:""}</span>`}</div>
           <div class="est"><dl><dt>放哪里</dt><dd id="tOpt"><b>${O.name}</b> <span class="dim">${O.range} · ${O.risk}</span></dd>
-          <dt>难度</dt><dd id="tEase">${ease}</dd>
+          <dt>难度</dt><dd id="tEase">${ease}</dd>${rk}
           ${easy?`<dt>轻松模式</dt><dd id="tEasy">多给它一年（${ymLabel(due2)}），每月只要 <b>${rm(m2)}</b> · <button class="linkbtn" type="button" id="tExt">用这个日期</button></dd>`:""}</dl></div>`;
         const ex=$("#tExt"); if(ex) ex.onclick=()=>{ TOUCH.add("due"); $("#aDue").value=due2; calc(); };
+        const ap=$("#aPos"); if(ap) ap.onchange=()=>{ POS=+ap.value; $("#tRankOut").innerHTML=rankImpact(tmp,POS); };
       };
       const setDue=n=>{ const v=addMonthsYM(n); $("#aDue").value=v; if($("#aDue").value!==v){ $("#aDue").insertAdjacentHTML("afterbegin",`<option value="${v}">${ymLabel(v)}</option>`); $("#aDue").value=v; } };
       // mode: 不写 = 打字时自动估；"go" = 马上估；"reset" = 点例子，全部重新估
@@ -2965,7 +3160,7 @@ function openAdd(prefill,over){
           if($("#aFields").hidden&&!typed){ ["#fName","#fTarget","#fSaved"].forEach(id=>fieldErr(id,"")); fieldErr("#fText","先写一句你想完成的事"); $("#aText").focus(); return; }
           setMore(true); $(bad).focus(); return; }
         const saved=sv.v||0, type=typeNow();
-        createGoal({type,text:G?G.src:"",name,target:t.v,deadline:$("#aDue").value,saved,extra:G?G.extra:{}}); };
+        createGoal({type,text:G?G.src:"",name,target:t.v,deadline:$("#aDue").value,saved,extra:G?G.extra:{},pos:POS}); };
       if(prefill) runGuess("reset");
       if(over&&G){ if(over.name) $("#aName").value=over.name; if(over.target>0){ G.target=Math.round(over.target/10)*10; $("#aTarget").value=G.target; }
         if(over.months>0) setDue(Math.max(1,Math.round(over.months))); if(over.saved>0) $("#aSaved").value=Math.round(over.saved);
@@ -3108,7 +3303,7 @@ function downloadBackup(){
     if(f&&navigator.canShare({files:[f]})){ navigator.share({files:[f]}).then(()=>done("备份已保存")).catch(e=>{ if(e&&e.name==="AbortError") undo(); else saveFile(); }); return; } }
   saveFile();
 }
-function applyBackup(d){ if(!d||!Array.isArray(d.goals)) throw 0; const gs=d.goals.map(norm); ["debts","debtBase","debtUpd","debtWins","spend"].forEach(k=>{ delete S[k]; }); S=Object.assign(S,d.S||{}); GOALS=gs; save(); obSet("bk",dataSig()); closeSheet(); toast("已还原 "+GOALS.length+" 个目标"); go("overview"); }
+function applyBackup(d){ if(!d||!Array.isArray(d.goals)) throw 0; const gs=d.goals.map(norm); ["debts","debtBase","debtUpd","debtWins","spend","order","debtX"].forEach(k=>{ delete S[k]; }); S=Object.assign(S,d.S||{}); GOALS=gs; save(); obSet("bk",dataSig()); closeSheet(); toast("已还原 "+GOALS.length+" 个目标"); go("overview"); }
 function restoreFile(f){ if(!f) return; const r=new FileReader(); r.onload=()=>{ try{ applyBackup(JSON.parse(r.result)); }catch(err){ toast("这个文件不是备份文件","err"); } }; r.readAsText(f); }
 
 /* ================= Confetti (Magic UI): milestone bursts, fireworks when a goal is completed ================= */
@@ -3147,11 +3342,31 @@ function coolBurst(x,y){
 }
 document.addEventListener("pointerdown",e=>{ const b=e.target.closest&&e.target.closest(".btn.pri"); if(b) coolBurst(e.clientX,e.clientY); });
 
+/* 现金流卡：照先后顺序，每个目标这个月分到多少、准时还是晚几个月；下面预告存完之后钱转去哪里 */
+function forderHTML(F){ const vis=visOrder(); if(!vis.length) return "";
+  const rows=vis.map((id,i)=>{ const c=PALETTE[i%PALETTE.length], x=F.items.find(y=>y.id===id), dot=`<i style="background:${c}"></i>`;
+    if(id===DROW){ if(!x) return ""; const short=x.want0-x.a0>=.5;
+      return `<li data-fid="${DROW}"><span class="rk">${i+1}</span><span class="fn">${dot}💳 多还高利息债</span><span class="fa">${rm(x.p0)}${short?`<small> / 要 ${rm(x.want0)}</small>`:""}</span><span class="ft">${x.wait0?'<span class="pill paused">先存满救命的钱，再开始多还</span>':short?'<span class="pill warn">分不够</span>':""}${isFinite(x.fin)?`<span>预计 ${ymLabel(addMonthsYM(x.fin))} 还清</span>`:'<span class="pill bad">照现在还不清</span>'}${x.spare0>=1?`<span>（含分完剩下的 ${rm(x.spare0)}）</span>`:""}${x.virt&&x.wait0&&x.vp0>=1?`<span>这 ${rm(x.vp0)} 每月先存进救命的钱（还没建立目标）</span>`:""}</span></li>`; }
+    const g=GOALS.find(y=>y.id===id);
+    if(!x) return `<li data-fid="${id}"><span class="rk">${i+1}</span><span class="fn">${dot}${esc(g.name)}</span><span class="fa">—</span><span class="ft"><span class="pill bad">已到期，要设新日期</span></span></li>`;
+    if(x.fin===0) return `<li data-fid="${id}"><span class="rk">${i+1}</span><span class="fn">${dot}${esc(g.name)}</span><span class="fa">—</span><span class="ft"><span class="pill good">金额够了</span></span></li>`;
+    const short=x.want0-x.a0>=.5, w=flowWhen(x), gift=x.p0-x.a0>=.5;
+    return `<li data-fid="${id}"><span class="rk">${i+1}</span><span class="fn">${dot}${esc(g.name)}</span><span class="fa">${rm(x.p0)}${short?`<small> / 要 ${rm(x.want0)}</small>`:""}</span><span class="ft">${F.hasI?lateTag(x,true):lateTag(x)}${w?`<span>${lateOf(x)>=1||lateOf(x)<=-1?"预计 ":""}${ymLabel(w)}</span>`:""}${gift?`<span>（含还债的 ${rm(x.p0-x.a0)}，先存满它）</span>`:""}</span></li>`; }).join("");
+  const left=F.hasI&&!F.DI&&F.left0>=1?`<li class="fleft"><span class="rk">+</span><span class="fn">剩下的放长期投资</span><span class="fa">${rm(F.left0)}</span><span class="ft"></span></li>`:"";
+  const ev=F.ev.filter(e=>e.fill.length||e.to).slice(0,3).map(e=>{ const x=F.items.find(y=>y.id===e.id), parts=e.fill.map(f=>`${rm(f.amt)} 补给${itemName(f.id)}`);
+    if(e.to){ const tx=F.items.find(y=>y.id===e.to), d=tx?lateOf(tx):0; parts.push(`${rm(e.rest)} 转去${itemName(e.to)}${d<=-1?`（会早 ${durTxt(-d)}）`:""}`); }
+    const one=parts.length===1&&Math.abs((e.fill[0]?e.fill[0].amt:e.rest)-e.freed)<1, body=one?parts[0].replace(/^RM[\d,]+ /,"全部"):parts.join("，");
+    return e.id===DROW?`<li>高利息债 ${ymLabel(addMonthsYM(e.t))} 还清：每月多还的 ${rm(e.freed)} ${one?body:"回到目标："+body}</li>`
+      :`<li>${itemName(e.id)}${ymLabel(flowWhen(x)||addMonthsYM(e.t))}存完：它每月的 ${rm(e.freed)}${one?" "+body:"，"+body}</li>`; }).join("");
+  return `<ol class="forder" id="fOrder" aria-label="照先后顺序，每个月的钱怎么分">${rows}${left}</ol>${ev?`<ul class="fev" id="fEv" aria-label="存完之后">${ev}</ul>`:""}<p style="margin:8px 0 0"><button class="linkbtn" type="button" id="ovOrd">${vis.length>1?"排先后顺序 ›":"看我的目标 ›"}</button></p>`; }
 /* ================= Animated Beam: money flowing from the surplus into each goal ================= */
-function flowBeamHTML(stats,surplus,monthly){
-  let items=stats.map((x,i)=>({n:x.g.name,a:x.s.budget||x.s.monthly,c:PALETTE[i%PALETTE.length]}));
+// 这个月每一份钱去哪里：照先后顺序，分到 0 的不画；没有高利息债才有「长期投资」
+function flowParts(F){ const out=[]; visOrder().forEach((id,i)=>{ const x=F.items.find(y=>y.id===id); if(!x||!(x.p0>=.5)) return; out.push({id,n:id===DROW?"多还高利息债":x.g.name,a:x.p0,c:PALETTE[i%PALETTE.length]}); });
+  if(F.DI&&F.DI.virt&&F.DI.wait0&&F.DI.vp0>=.5) out.push({id:"vef",n:"救命的钱（还没建立）",a:F.DI.vp0,c:"#37D9E8"});
+  if(!F.DI&&F.left0>=.5&&isFinite(F.left0)) out.push({id:"inv",n:"长期投资",a:F.left0,c:"#3DD68C"}); return out; }
+function flowBeamHTML(F){ const surplus=F.sur;
+  let items=flowParts(F);
   if(items.length>6){ const rest=items.slice(5); items=items.slice(0,5).concat([{n:`其他 ${rest.length} 个`,a:rest.reduce((s,x)=>s+x.a,0),c:"#8998B5"}]); }
-  if(surplus>monthly) items.push({n:"长期投资",a:surplus-monthly,c:"#3DD68C"});
   const max=Math.max(1,...items.map(x=>x.a));
   return `<div class="flowbeam" aria-hidden="true"><div class="fb-src"><span>每月盈余</span><b>${rm(surplus)}</b></div><svg></svg>
     <div class="fb-dst">${items.map(x=>`<span data-w="${(1.5+3.5*x.a/max).toFixed(1)}"><i style="background:${x.c};color:${x.c}"></i><span class="nm">${esc(x.n)}</span><b>${rm(x.a)}</b></span>`).join("")}</div></div>`;
@@ -3336,7 +3551,7 @@ function renderHomePh(c){ const {act,stats,ns,hasEF,efOpen,pctAll,flowCard,healt
   $("#pzCta").onclick=F.f; $("#nsBtn").onclick=ns.f;
   const open=k=>{ if(k==="health"&&!health){ openSpend(); return; }
     const P={flow:["每月现金流",flowCard],health:["财务健康检查",health],tm:["时光机",tm]}[k];
-    modal({title:P[0],body:P[1],cls:"pz-panel",onMount:()=>{ const on=(id,f)=>{ const el=$(id); if(el) el.onclick=f; }; on("#ovSet",openProfile); on("#ovSpend",()=>openSpend()); on("#ovFar",()=>confirmPause(far)); on("#ovExp",()=>{ const x=stats.find(y=>isExp(y.g,y.s)); if(x) openEdit(x.g); }); if(k==="tm") bindTM(stats); runAnims($("#sheetRoot")); drawBeams(); }}); };
+    modal({title:P[0],body:P[1],cls:"pz-panel",onMount:()=>{ const on=(id,f)=>{ const el=$(id); if(el) el.onclick=f; }; on("#ovSet",openProfile); on("#ovSpend",()=>openSpend()); on("#ovFar",()=>confirmPause(far)); on("#ovOrd",()=>{ closeSheet(); go("goals"); }); on("#ovExp",()=>{ const x=stats.find(y=>isExp(y.g,y.s)); if(x) openEdit(x.g); }); if(k==="tm") bindTM(stats); runAnims($("#sheetRoot")); drawBeams(); }}); };
   $("#main").querySelectorAll("[data-pz]").forEach(b=>b.onclick=()=>open(b.dataset.pz));
 }
 function renderWelcomePh(){
@@ -3369,21 +3584,26 @@ function renderWelcomePh(){
   ["#wMove","#wPaste"].forEach(id=>{ const b=$(id); if(b) b.onclick=pasteRestore; });
 }
 function renderGoalsPh(){ const L={active:activeSorted(),paused:GOALS.filter(g=>g.status==="paused"),done:GOALS.filter(g=>g.status==="done")}, cur=L[PZSEG]?PZSEG:"active", list=L[cur];
-  const row=g=>{ const s=stat(g), left=Math.max(0,g.target-g.saved), sub=cur==="active"?(left>0?(isExp(g,s)?`<span class="wn">已到期 · 还差 ${rm(left)}，要设新日期</span>`:`这个月还要存 ${rm(monthNeed(g,s).rest)} · 还差 ${rm(left)}`):"金额够了"):cur==="paused"?`${rm(g.saved)} / ${rm(g.target)}`:`${g.doneAt||""} 完成`;
+  const F=flowNow(), vis=cur==="active"?visOrder():null, ordOn=!!vis&&vis.length>1;
+  const drow=i=>{ const x=F.DI; if(!x) return ""; return `<div class="pz-rw" data-id="${DROW}"><div class="pz-row"><button class="pz-rm" type="button" data-debtrow>${ordOn?`<span class="rk" data-rk aria-hidden="true">${i+1}</span>`:""}<span class="pz-dic" aria-hidden="true">💳</span><span class="pz-lt"><b>多还高利息债 <span data-lt>${ltFor(DROW,F)}</span></b><small>每月多还 ${rm(x.need)} · ${isFinite(x.fin)?`预计 ${ymLabel(addMonthsYM(x.fin))} 还清`:"照现在还不清"}</small></span></button><button class="btn ghost sm" type="button" data-debtx>改金额</button></div></div>`; };
+  const row=(g,i)=>{ const s=stat(g), left=Math.max(0,g.target-g.saved), sub=cur==="active"?(left>0?(isExp(g,s)?`<span class="wn">已到期 · 还差 ${rm(left)}，要设新日期</span>`:`这个月还要存 ${rm(monthNeed(g,s).rest)} · 还差 ${rm(left)}`):"金额够了"):cur==="paused"?`${rm(g.saved)} / ${rm(g.target)}`:`${g.doneAt||""} 完成`;
     return `<div class="pz-rw" data-id="${g.id}">${cur==="done"?"":`<button class="pz-act" type="button" ${cur==="active"?`data-pzpause="${g.id}">暂停`:`data-pzresume="${g.id}">恢复`}</button>`}
-      <div class="pz-row"><button class="pz-rm" type="button" data-open="${g.id}"><span class="ring pz-rr" data-fly="${g.id}">${gauge(s.pct,"pr-"+g.id)}<span class="ring-c"><b>${Math.round(s.pct*100)}%</b></span></span><span class="pz-lt"><b>${esc(g.name)}</b><small>${sub}</small></span></button>${cur==="active"&&left>0?`<button class="qadd" type="button" data-qadd="${g.id}" aria-label="存入「${esc(g.name)}」">${svgI("plus")}</button>`:""}</div></div>`; };
+      <div class="pz-row"><button class="pz-rm" type="button" data-open="${g.id}">${ordOn?`<span class="rk" data-rk aria-hidden="true">${i+1}</span>`:""}<span class="ring pz-rr" data-fly="${g.id}">${gauge(s.pct,"pr-"+g.id)}<span class="ring-c"><b>${Math.round(s.pct*100)}%</b></span></span><span class="pz-lt"><b>${esc(g.name)}${cur==="active"?` <span data-lt>${lateTag(F.items.find(y=>y.id===g.id))}</span>`:""}</b><small>${sub}</small></span></button>${cur==="active"&&left>0?`<button class="qadd" type="button" data-qadd="${g.id}" aria-label="存入「${esc(g.name)}」">${svgI("plus")}</button>`:""}</div></div>`; };
   $("#main").innerHTML=`<div class="pz-gh"><div class="pz-seg" role="tablist" aria-label="目标状态">${[["active","进行中"],["paused","暂停"],["done","完成"]].map(([k,t])=>`<button type="button" role="tab" data-seg="${k}" aria-selected="${cur===k}">${t}${L[k].length?` ${L[k].length}`:""}</button>`).join("")}</div><button class="btn pri icon" type="button" id="gAdd" aria-label="新目标">${svgI("plus")}</button></div>
-    ${list.length?`<section class="card pz-rows">${list.map(row).join("")}</section>`:`<section class="card empty"><div class="big">${svgI(cur==="done"?"trophy":cur==="paused"?"pause":"target")}</div><h2>${cur==="done"?"第一个奖杯在等你":cur==="paused"?"没有暂停的目标":"还没有进行中的目标"}</h2><p>${cur==="active"?"写一句你想完成的事，系统会帮你算每个月要存多少。":cur==="paused"?"在目标上往左滑，就可以暂停。":"存够之后按「标记完成」，它就会出现在这里。"}</p></section>`}
-    ${cur==="active"&&list.length?'<p class="note pz-hint">往左滑可以暂停目标</p>':""}`;
+    ${list.length?`${cur==="active"?orderNoteHTML(F):""}<section class="card pz-rows"${cur==="active"?' id="pzOrder"':""}>${cur==="active"?vis.map((id,i)=>id===DROW?drow(i):row(GOALS.find(x=>x.id===id),i)).join(""):list.map(row).join("")}</section>`:`<section class="card empty"><div class="big">${svgI(cur==="done"?"trophy":cur==="paused"?"pause":"target")}</div><h2>${cur==="done"?"第一个奖杯在等你":cur==="paused"?"没有暂停的目标":"还没有进行中的目标"}</h2><p>${cur==="active"?"写一句你想完成的事，系统会帮你算每个月要存多少。":cur==="paused"?"在目标上往左滑，就可以暂停。":"存够之后按「标记完成」，它就会出现在这里。"}</p></section>`}
+    ${cur==="active"&&list.length?`<p class="note pz-hint">${ordOn?"长按一下再拖，可以排先后；":""}往左滑可以暂停目标</p>`:""}`;
   $("#gAdd").onclick=()=>openAdd("");
   $("#main").querySelectorAll("[data-seg]").forEach(b=>b.onclick=()=>{ PZSEG=b.dataset.seg; render(); });
   $("#main").querySelectorAll("[data-open]").forEach(b=>b.onclick=()=>{ PZLIST={id:b.dataset.open,y:pageY()}; go("goal",b.dataset.open,{from:b.closest(".pz-rw")}); });
   $("#main").querySelectorAll("[data-pzpause]").forEach(b=>b.onclick=()=>confirmPause(GOALS.find(x=>x.id===b.dataset.pzpause)));
   $("#main").querySelectorAll("[data-pzresume]").forEach(b=>b.onclick=()=>resumeGoal(GOALS.find(x=>x.id===b.dataset.pzresume)));
-  bindQuick();
+  $("#main").querySelectorAll("[data-debtrow]").forEach(b=>b.onclick=()=>go("debt"));
+  $("#main").querySelectorAll("[data-debtx]").forEach(b=>b.onclick=e=>{ e.stopPropagation(); openDebtX(); });
+  const os=$("#ordSet"); if(os) os.onclick=openProfile;
+  bindQuick(); const box=$("#pzOrder"); if(box&&ordOn) bindReorder(box,".pz-rw[data-id]");
   $("#main").querySelectorAll(".pz-rw").forEach(w=>{ if(!w.querySelector(".pz-act")) return; const r=w.querySelector(".pz-row"), W=84; let x0=0,y0=0,dx=0,base=0,drag=false;
     r.addEventListener("touchstart",e=>{ x0=e.touches[0].clientX; y0=e.touches[0].clientY; dx=0; drag=false; base=w.classList.contains("open")?-W:0; r.style.transition="none"; },{passive:true});
-    r.addEventListener("touchmove",e=>{ dx=e.touches[0].clientX-x0; const dy=e.touches[0].clientY-y0; if(!drag&&Math.abs(dx)>10&&Math.abs(dx)>Math.abs(dy)) drag=true; if(drag) r.style.transform=`translateX(${Math.max(-W,Math.min(0,base+dx))}px)`; },{passive:true});
+    r.addEventListener("touchmove",e=>{ if(REORD) return; dx=e.touches[0].clientX-x0; const dy=e.touches[0].clientY-y0; if(!drag&&Math.abs(dx)>10&&Math.abs(dx)>Math.abs(dy)) drag=true; if(drag) r.style.transform=`translateX(${Math.max(-W,Math.min(0,base+dx))}px)`; },{passive:true});
     r.addEventListener("touchend",()=>{ r.style.transition=""; if(!drag){ r.style.transform=""; return; } const open=base+dx<-W/2; $("#main").querySelectorAll(".pz-rw.open").forEach(o=>{ if(o!==w){ o.classList.remove("open"); o.querySelector(".pz-row").style.transform=""; } }); w.classList.toggle("open",open); r.style.transform=open?`translateX(${-W}px)`:""; });
     r.addEventListener("click",e=>{ if(w.classList.contains("open")){ e.preventDefault(); e.stopPropagation(); w.classList.remove("open"); r.style.transform=""; } },true); });
 }
@@ -3552,7 +3772,108 @@ function simDebts(extra,gap,noRoll){
   const done=L.every(x=>x.n!=null);
   return {done,months:done?t:Infinity,interest,each:L,efN};
 }
-function planDebt(o){ const f=debtFunds(o), p=simDebts(f.extra,f.gap); return Object.assign(p,f); }
+/* ================= 每个月的钱怎么分（目标互相影响） =================
+   每个月的盈余照「先后顺序」分：排前面的先拿够每月要存的钱，后面的拿剩下的；分不够的会变晚（只显示，不会自己改目标）。
+   一个目标存够了，它每月的钱先补给分不够的，剩下的加给排第一、还在存的那个（预告；真的「标记完成」或删除时才改，见 rollPlan）。
+   多还高利息债：每月多还 debtXOf()（默认 12 个月还清）。排在它前面的救命的钱还没存满，这笔钱先放进救命的钱
+   （Brader：先存满救命的钱，再还卡债）。有高利息债的时候，分完还剩的钱也拿去还债，不放长期投资。
+   债还清了，它的钱回到分不够的目标，剩下的才放长期投资。没填收入：每个目标都当作分得到，只算「存完转下一个」。
+   o: inc / exp 换收入开销；vis = 试排的先后；add + at = 试加一个新目标；skip = 当作没有这个目标；
+      needOf = {id: 每月金额}（金额够了也照这个算）；debtX = 试另一个多还金额；months = 只算几个月 */
+function debtStart(){ const L=hiDebts().map(d=>({id:d.id,b:d.bal,r:d.rate/1200,m:d.min,n:null,i:0})); return {L,base:L.reduce((a,x)=>a+x.m,0)+rollM(),interest:0}; }
+function debtStep(D,t,bonus){ const L=D.L;
+  L.forEach(x=>{ if(x.n==null){ const it=x.b*x.r; x.b+=it; x.i+=it; D.interest+=it; } });
+  let pool=D.base+bonus;
+  L.forEach(x=>{ if(x.n==null){ const p=Math.min(x.b,x.m); x.b-=p; pool-=p; if(t===1) x.first=(x.first||0)+p; } });
+  for(const x of L){ if(pool<=.005) break; if(x.n==null&&x.b>.005){ const p=Math.min(x.b,pool); x.b-=p; pool-=p; if(t===1) x.first=(x.first||0)+p; } }
+  L.forEach(x=>{ if(x.n==null&&x.b<=.005){ x.b=0; x.n=t; } });
+  return L.every(x=>x.n!=null); }
+// 默认每月多还多少：12 个月内还清所有高利息债（最低还款以外）
+function debtAuto(){ if(!hiDebts().length) return 0; const n=x=>simDebts(x,0).months; if(n(0)<=12) return 0;
+  let lo=0, hi=Math.max(1,hiDebts().reduce((a,d)=>a+d.bal,0)); for(let i=0;i<40;i++){ const m=(lo+hi)/2; if(n(m)<=12) hi=m; else lo=m; } return Math.ceil(hi/10)*10; }
+const debtXOf=()=>typeof S.debtX==="number"&&S.debtX>=0?S.debtX:debtAuto();
+// 和下面逐月模拟同一个算法（同样的误差容许），照计划的目标才不会多出或少掉一个月
+function reachN(T,b,p,r){ if(b>=T-.005) return 0; for(let n=1;n<=900;n++){ b=b*(1+r)+p; if(b>=T-.005) return n; } return Infinity; }
+const ymPlus=(ym,n)=>{ const [y,m]=ym.split("-").map(Number), k=y*12+m-1+Math.round(n); return Math.floor(k/12)+"-"+pad(k%12+1); };
+function flowSim(o={}){
+  const inc=o.inc!=null?o.inc:S.income, exp=o.exp!=null?o.exp:S.expense, hasI=inc>0, sur=hasI?Math.max(0,inc-exp):Infinity;
+  let ord=o.vis?mergeVis(o.vis):orderAll(); const add=o.add||null;
+  if(add){ const vs=ord.filter(id=>id===DROW?debtRowOn():(GOALS.find(g=>g.id===id)||{}).status==="active");
+    if(o.at==null||o.at>=vs.length) ord=ord.concat(add.id); else { ord=ord.slice(); ord.splice(ord.indexOf(vs[o.at]),0,add.id); } }
+  const items=[];
+  ord.forEach(id=>{
+    if(id===DROW){ if(hasI&&hiDebts().length) items.push({k:"d",id,need:o.debtX!=null?o.debtX:debtXOf(),plus:0,fin:null,live0:true,a0:0,p0:0,D:debtStart()}); return; }
+    const g=add&&id===add.id?add:GOALS.find(x=>x.id===id); if(!g||g.status!=="active"||id===o.skip) return;
+    const s=stat(g); if(isExp(g,s)) return; // 过期的目标要先设新日期，不分钱
+    const forced=!!o.needOf&&o.needOf[id]!=null, full=g.saved>=g.target&&!forced, need=forced?o.needOf[id]:full?0:planM(g,s);
+    items.push({k:"g",id,g,s,bal:g.saved,T:g.target,r:s.r,need,plus:0,fin:full?0:null,live0:!full,a0:0,p0:0,want0:need,ser:[Math.min(g.saved,g.target)],
+      base:full?0:reachN(g.target,g.saved,need,s.r)}); // 只靠利息就会存够的，每月要存 0
+  });
+  const live=x=>x.fin==null, DI=items.find(x=>x.k==="d")||null, ev=[], TM=o.months||600;
+  const pour=()=>{ let av=sur; const A=new Map(); items.forEach(x=>{ if(!live(x)) return; const a=Math.min(x.need+x.plus,av); av-=a; A.set(x.id,a); }); return {A,left:av}; };
+  // x 存够了（或债还清了）：比一比少了它之后每个人多分到多少 = 补给分不够的；剩下的给排第一、还在存的（债还清的不给）
+  const roll=(x,t,keep)=>{ const A=pour().A, freed=A.get(x.id)||0; x.fin=t; if(freed<.5) return; const B=pour().A; let abs=0; const fill=[];
+    B.forEach((v,id)=>{ const d=v-(A.get(id)||0); if(d>=.5){ fill.push({id,amt:d}); abs+=d; } });
+    const rest=Math.max(0,freed-abs), to=!keep&&rest>=.5?items.find(live)||null:null; if(to) to.plus+=rest;
+    ev.push({t,id:x.id,freed,fill,rest:to?rest:0,to:to?to.id:null,left:to?0:rest}); };
+  let t=0, a1={A:new Map(),left:sur};
+  // 还没有「救命的钱」目标（或暂停了）：跟以前一样，先把建议的救命钱存够，才开始多还债
+  let vef=DI&&!GOALS.some(g=>g.type==="emergency"&&g.status!=="paused")&&!(add&&add.type==="emergency")?efGapFor(inc,exp):0;
+  if(DI) DI.virt=vef>.005;
+  while(t<TM&&items.some(live)){ t++;
+    const P=pour(); if(t===1) a1=P;
+    const di=DI&&live(DI)?items.indexOf(DI):-1, efW=di>=0?items.find((x,i)=>i<di&&x.k==="g"&&live(x)&&x.g.type==="emergency")||null:null;
+    let vrem=null; // 存够建议救命钱的那个月，多出来的当月就拿去还债
+    if(di>=0&&vef>.005){ const v=(P.A.get(DI.id)||0)+(isFinite(P.left)?P.left:0), tk=Math.min(vef,v); vef-=tk; if(t===1) DI.vp0=tk; if(vef<=.005){ DI.vefN=t; vrem=v-tk; } else vrem=0; }
+    const spare=di>=0&&isFinite(P.left)?P.left:0; // 有高利息债：分完还剩的也拿去还债（还在等救命的钱就先放进救命的钱）
+    const done=[];
+    items.forEach(x=>{ if(!live(x)) return; const a=P.A.get(x.id)||0;
+      if(x.k==="g"){ let p=a; if(x===efW) p+=(P.A.get(DI.id)||0)+spare; if(t===1){ x.a0=a; x.p0=p; x.want0=x.need+x.plus; } x.bal=x.bal*(1+x.r)+p; x.ser.push(Math.min(x.T,x.bal)); if(x.bal>=x.T-.005) done.push(x); }
+      else { const w=!!efW||vrem===0, p=efW?0:vrem!=null?vrem:a+spare; if(t===1){ x.a0=a; x.p0=p; x.spare0=w?0:spare; x.wait0=w; x.want0=x.need; } if(w) x.waitN=t; if(debtStep(x.D,t,p)) done.push(x); } });
+    done.forEach(x=>roll(x,t,x.k==="d"));
+  }
+  items.forEach(x=>{ if(x.fin==null) x.fin=Infinity; if(x.k==="g") x.d=x.fin===Infinity?(isFinite(x.base)?Infinity:0):x.fin-x.base; });
+  return {hasI,sur,items,ev,DI,a1,left0:a1.left};
+}
+let FLOWC={k:null,v:null};
+function flowNow(){ const k=snapState(); if(FLOWC.k!==k) FLOWC={k,v:flowSim()}; return FLOWC.v; }
+const flowOf=id=>flowNow().items.find(x=>x.id===id)||null;
+// 预计哪个月存够：照计划（没有自己定金额）跟期限走，和目标页面同一个算法
+const flowWhen=x=>!x||!isFinite(x.fin)?null:x.k==="d"?addMonthsYM(x.fin):!x.s.budget&&x.s.left>0?ymPlus(x.g.deadline,x.d):addMonthsYM(x.fin);
+const lateOf=x=>!x||x.k!=="g"||x.fin===0?0:x.d;
+function lateTag(x,on){ const d=lateOf(x); return d===Infinity?'<span class="pill bad">存不够</span>':d>=1?`<span class="pill warn">晚 ${durTxt(d)}</span>`:d<=-1?`<span class="pill good">早 ${durTxt(-d)}</span>`:on?'<span class="pill good">准时</span>':""; }
+const itemName=id=>id===DROW?"多还高利息债":"「"+((GOALS.find(g=>g.id===id)||{}).name||"新目标")+"」";
+// 「标记完成」或删除 g：它每月的钱要去哪里。只算不改；applyRoll 才改
+function rollPlan(g){
+  if(!g||g.status!=="active") return null; const s=stat(g); if(isExp(g,s)) return null;
+  // 每月的钱：自己定的金额；不然是这个月开始时每月要存的钱；上个月以前就存满了，用当初计划的每月金额
+  const got=monthIn(g), m=Math.round(s.budget||(g.saved-got<g.target?pmtFor(g.target,Math.max(0,g.saved-got),s.r,Math.max(1,s.left)):s.plan));
+  if(!(m>=1)) return null;
+  const F=flowSim({needOf:{[g.id]:m},months:1}), x=F.items.find(y=>y.id===g.id); if(!x) return null;
+  const freed=x.a0; if(freed<1) return null;
+  const G=flowSim({skip:g.id,months:1}); let abs=0; const fill=[];
+  G.items.forEach(y=>{ const y0=F.items.find(z=>z.id===y.id), d=y.a0-(y0?y0.a0:0); if(d>=.5){ fill.push({id:y.id,amt:Math.round(d)}); abs+=d; } });
+  const rest=Math.round(Math.max(0,freed-abs)), to=rest>=1?G.items.find(y=>y.live0)||null:null;
+  return {id:g.id,m:Math.round(freed),fill,rest:to?rest:0,to:to?{id:to.id,k:to.k}:null,left:to?0:rest};
+}
+function applyRoll(R){ if(!R||!R.to) return;
+  if(R.to.k==="d"){ S.debtX=Math.round(debtXOf()+R.rest); return; }
+  const tg=GOALS.find(x=>x.id===R.to.id); if(tg) tg.budget=Math.round(planM(tg,stat(tg))+R.rest); }
+// F0 = 改之前的 flow（目标还在）；F1 = 改之后
+function rollTxt(R,F0,F1){ if(!R) return "";
+  const f0=id=>F0.items.find(y=>y.id===id), f1=id=>F1.items.find(y=>y.id===id), parts=R.fill.map(f=>{ const a=f0(f.id), b=f1(f.id), fixed=a&&b&&a.k==="g"&&lateOf(a)>=1&&!(lateOf(b)>=1); return `${rm(f.amt)} 补给${itemName(f.id)}${fixed?"，回到准时":""}`; });
+  if(R.to){ const a=f0(R.to.id), b=f1(R.to.id), e=a&&b&&isFinite(a.k==="g"?a.base:a.fin)&&isFinite(b.fin)?(a.k==="g"?a.base:a.fin)-b.fin:0;
+    parts.push(`${rm(R.rest)} 转去${itemName(R.to.id)}${e>=1?`，早 ${durTxt(e)}${R.to.k==="d"?"还清":"存够"}`:""}`); }
+  else if(R.left) parts.push(`${rm(R.left)} 可以放进长期投资`);
+  return `每月 ${rm(R.m)} 空出来：${parts.join("；")}`; }
+function planDebt(o){ o=o||{};
+  if(o.paused||!((o.inc!=null?o.inc:S.income)>0)){ const f=debtFunds(o), p=simDebts(f.extra,f.gap); return Object.assign(p,f); } // 暂停其他目标（全部盈余拿去还）、没填收入：照旧
+  const F=o.inc!=null||o.exp!=null?flowSim({inc:o.inc,exp:o.exp}):flowNow(), D=F.DI, sur=F.sur;
+  if(!D) return {done:true,months:0,interest:0,each:[],efN:0,sur,goals:0,extra:0,gap:0};
+  const ef=D.wait0?F.items.find(x=>x.k==="g"&&x.g.type==="emergency"&&x.live0&&F.items.indexOf(x)<F.items.indexOf(D)):null;
+  const goals=F.items.filter(x=>x.k==="g"&&x.g.type!=="emergency").reduce((a,x)=>a+x.a0,0);
+  return {done:isFinite(D.fin),months:D.fin,interest:D.D.interest,each:D.D.L,efN:ef&&isFinite(ef.fin)?ef.fin:D.virt?(D.vefN||null):null,sur,goals,extra:D.p0,gap:D.wait0?efGapFor(o.inc!=null?o.inc:S.income,o.exp!=null?o.exp:S.expense):0,wait:D.wait0,flow:F};
+}
 function rebaseDebt(){ const p=planDebt(); S.debtBase=p.done?addMonthsYM(p.months):null; }
 const ymGap=(a,b)=>{ const [x,y]=a.split("-").map(Number), [u,v]=b.split("-").map(Number); return (x*12+y)-(u*12+v); };
 
@@ -3582,7 +3903,7 @@ function renderDebt(){
       <div class="fact"><div class="l">还欠</div><div class="v cy">${rm(sum)}</div><div class="s">${hi.length} 笔超过 ${DEBT_HI}% 利息</div></div>
       <div class="fact"><div class="l">预计还清</div><div class="v">${eta?ymLabel(eta):"还不清"}</div><div class="s">${eta?durTxt(p.months)+"后":"要先增加每月还款"}</div></div>
       <div class="fact"><div class="l">还要付的利息</div><div class="v">${p.done?rm(p.interest):"—"}</div><div class="s">照这个计划</div></div>
-      <div class="fact"><div class="l">比只付最低还款省</div><div class="v gd">${save1!=null?rm(save1):only.done?"—":"还得清"}</div><div class="s">${only.done?"利息少付这么多":"只付最低还款永远还不完"}</div></div></div></section>`
+      <div class="fact"><div class="l">比只付最低还款省</div><div class="v gd">${save1!=null?rm(save1):only.done?"—":"还得清"}</div><div class="s">${only.done?"利息少付这么多":"只付最低还款永远还不完"}</div></div></div>${dxLine()}</section>`
     :`<section class="card mt" id="dHero"><p style="margin:0">没有超过 ${DEBT_HI}% 利息的债。下面这些照常付月供就好，不用急着提前还。</p></section>`;
   const row=(d,i)=>{ const x=each[d.id], pay=x&&x.first!=null?x.first:d.min, pc=Math.max(0,Math.min(100,(1-d.bal/Math.max(1,d.startBal))*100));
     return `<div class="td-row drow" data-debt="${d.id}"><span class="td-ic drank" aria-hidden="true">${i+1}</span><div class="td-main"><b>${esc(d.name)} <span class="pill warn">${d.rate}%</span>${i===0?' <span class="pill good">先还这一笔</span>':""}</b>
@@ -3592,7 +3913,7 @@ function renderDebt(){
       <div class="dbtns"><button class="btn ghost sm" type="button" data-dedit="${d.id}">修改</button><button class="btn ghost sm" type="button" data-ddel="${d.id}">删除</button></div></div>`;
   const minSum=liveDebts().reduce((a,d)=>a+d.min,0), lowExp=S.income>0&&S.expense<minSum;
   if(isPh()){ const top=hi[0], first=top&&each[top.id]?each[top.id].first||top.min:0, sh=(d,i)=>`<button class="pz-li drow" type="button" data-debt="${d.id}" data-dopen="${d.id}">${i!=null?`<span class="td-ic drank" aria-hidden="true">${i+1}</span>`:`<span class="td-ic" aria-hidden="true">${svgI("clock")}</span>`}<span class="pz-lt"><b>${esc(d.name)} <span class="pill ${i!=null?"warn":"paused"}">${d.rate}%</span></b><small>${i!=null&&each[d.id]&&each[d.id].n!=null?`预计 ${ymLabel(addMonthsYM(each[d.id].n))} 还清`:`每月 ${rm(d.min)}`}</small></span><b class="pz-amt">${rm(d.bal)}</b></button>`;
-    $("#main").innerHTML=(alerts[0]||"")+(top?`<section class="card pz-hero pz-dh" id="dHero"><div class="pz-hl"><span class="pz-l">现在先还</span><b class="pz-dn">${esc(top.name)} <span class="pill warn">${top.rate}%</span></b><span class="pz-l" style="margin-top:10px">这个月还</span><b class="pz-big" id="pzPay">${rm(first)}</b><span class="pz-s">${eta?`预计 ${ymLabel(eta)} 全部还清`:"照现在的还款还不清"} ${pace}</span>${save1?`<span class="pz-s">比只付最低还款省 ${rm(save1)} 利息</span>`:""}</div><button class="btn pri lg pz-cta" type="button" id="dUpd">更新账单</button></section>`
+    $("#main").innerHTML=(alerts[0]||"")+(top?`<section class="card pz-hero pz-dh" id="dHero"><div class="pz-hl"><span class="pz-l">现在先还</span><b class="pz-dn">${esc(top.name)} <span class="pill warn">${top.rate}%</span></b><span class="pz-l" style="margin-top:10px">这个月还</span><b class="pz-big" id="pzPay">${rm(first)}</b><span class="pz-s">${eta?`预计 ${ymLabel(eta)} 全部还清`:"照现在的还款还不清"} ${pace}</span>${save1?`<span class="pz-s">比只付最低还款省 ${rm(save1)} 利息</span>`:""}${dxLine()}</div><button class="btn pri lg pz-cta" type="button" id="dUpd">更新账单</button></section>`
       :`<section class="card" id="dHero"><p style="margin:0 0 12px">没有超过 ${DEBT_HI}% 利息的债。下面这些照常付月供就好，不用急着提前还。</p><button class="btn pri lg pz-cta" type="button" id="dUpd">更新账单</button></section>`)+
       (hi.length?`<section class="card mt pz-list" id="dHi"><div class="chead"><div><h2>还款顺序</h2></div></div>${hi.map((d,i)=>sh(d,i)).join("")}</section>`:"")+
       (lo.length?`<section class="card mt pz-list" id="dLo"><div class="chead"><div><h2>照常付月供</h2></div></div>${lo.map(d=>sh(d)).join("")}</section>`:"")+
@@ -3605,8 +3926,11 @@ function renderDebt(){
     `<p class="note">${lowExp?`<span class="wn">你填的每月开销比这些月供（${rm(minSum)}）还少，记得把月供算进开销。</span> `:""}计算假设利率不变、不再新增债务，实际以银行账单为准。</p>`;
   bindDebt();
 }
+// 多还高利息债在先后顺序里排第几、每月多还多少
+function dxLine(){ if(!debtRowOn()) return ""; const F=flowNow(), x=F.DI, vis=visOrder(), i=vis.indexOf(DROW); if(!x) return "";
+  return `<p class="sub dxline" id="dxLine" style="margin:12px 0 0">在先后顺序排第 ${i+1}（共 ${vis.length} 个），最低还款以外每月多还 <b>${rm(x.need)}</b>${x.wait0?"，救命的钱存满后才开始":x.want0-x.a0>=.5?`，<span class="wn">这个月只分到 ${rm(x.a0)}</span>`:""}${x.spare0>=1?`；分完剩下的 ${rm(x.spare0)} 也拿来还`:""}。 <button class="linkbtn" type="button" id="dX">改金额</button> · <button class="linkbtn" type="button" id="dOrd">排先后</button></p>`; }
 function bindDebt(){ const on=(id,f)=>{ const el=$(id); if(el) el.onclick=f; };
-  on("#dAdd",()=>openDebtForm()); on("#dUpd",openDebtUpdate); on("#dUpd2",openDebtUpdate); on("#dSpend",()=>openSpend()); on("#dPause",pauseForDebt);
+  on("#dAdd",()=>openDebtForm()); on("#dUpd",openDebtUpdate); on("#dX",openDebtX); on("#dOrd",()=>go("goals")); on("#dUpd2",openDebtUpdate); on("#dSpend",()=>openSpend()); on("#dPause",pauseForDebt);
   on("#dEF",()=>{ const g=GOALS.find(x=>x.type==="emergency"&&x.status!=="paused"); if(g) go("goal",g.id); else openAdd("存够救命的钱"); });
   $("#main").querySelectorAll("[data-dedit]").forEach(b=>b.onclick=()=>openDebtForm(debtList().find(d=>d.id===b.dataset.dedit)));
   $("#main").querySelectorAll("[data-dopen]").forEach(b=>b.onclick=()=>{ const d=debtList().find(x=>x.id===b.dataset.dopen); modal({title:esc(d.name),sub:`一年利率 ${d.rate}%`,body:`<div class="est"><dl><dt>还欠</dt><dd><b>${rm(d.bal)}</b></dd><dt>每月还款</dt><dd>${rm(d.min)}</dd><dt>开始</dt><dd>${d.start}</dd></dl></div>`,foot:`<button class="btn ghost" type="button" id="dmDel">删除</button><button class="btn pri" type="button" id="dmEdit">修改</button>`,onMount:()=>{ $("#dmEdit").onclick=()=>openDebtForm(d); $("#dmDel").onclick=()=>delDebt(d); }}); });
@@ -3858,7 +4182,7 @@ async function shareApp(){ const d={title:"Brader 财务目标",text:"写下你�
 const MAC=/Mac|iPhone|iPad/.test(navigator.platform||navigator.userAgent||"");
 const PAGE_KEYS=["overview","goals","ask","done","paused","debt"];
 function openKeys(){
-  const K=[["N","新目标"],["U","更新进度（在目标页面）"],["1 – 6","总览、我的目标、问 Brader、成就墙、暂停中的目标、还债计划"],["/","找题目（问 Brader）"],["H","遮住 / 显示金额"],["T","深色 / 浅色主题"],[MAC?"⌘ Z":"Ctrl Z","撤销刚才的存入、取出、删除记录"],["?","打开这个说明"],["Esc","关掉窗口"]];
+  const K=[["N","新目标"],["U","更新进度（在目标页面）"],["1 – 6","总览、我的目标、问 Brader、成就墙、暂停中的目标、还债计划"],["/","找题目（问 Brader）"],[(MAC?"⌥":"Alt")+" ↑ ↓","排先后（在「我的目标」，先按 Tab 选好一个目标）"],["H","遮住 / 显示金额"],["T","深色 / 浅色主题"],[MAC?"⌘ Z":"Ctrl Z","撤销刚才的存入、取出、删除记录"],["?","打开这个说明"],["Esc","关掉窗口"]];
   modal({title:"快捷键",sub:"在输入框里打字的时候，这些键不会触发。",body:`<dl class="keys">${K.map(([k,d])=>`<dt>${k.split(" ").filter(x=>x).map(x=>x==="–"?"–":`<kbd>${x}</kbd>`).join("")}</dt><dd>${d}</dd>`).join("")}</dl>`,
     foot:`<button class="btn pri" type="button" id="kOk">知道了</button>`,focus:"#kOk",onMount:()=>{ $("#kOk").onclick=closeSheet; }}); }
 document.addEventListener("keydown",e=>{
@@ -3894,6 +4218,8 @@ render();
 initCloud();
 watchFX();
 pzKeepPop();
+// 测试用：网址加 ?t=1 才打开，用户看不到
+if(/[?&]t=1(&|$)/.test(location.search)) window.__B={flowSim,flowNow,rollPlan,visOrder,orderAll,debtXOf,debtAuto,planDebt,stat,lateOf,flowWhen,fixDue,get S(){ return S; },get G(){ return GOALS; },render,go};
 /* ================= 手机版：页面固定（没有回弹）+ 下拉刷新 ================= */
 (()=>{ const TH=72, MAX=104, HID=-52;
   const el=document.createElement("div"); el.id="pzPtr"; el.setAttribute("aria-hidden","true");
@@ -3904,7 +4230,7 @@ pzKeepPop();
   // 手指底下还能往这个方向滑的内容（里面的列表滑到尽头，就轮到外面的页面）
   const mov=(n,dir)=>{ for(let e=n;e&&e!==document.body;e=e.parentElement){ if(!/auto|scroll/.test(getComputedStyle(e).overflowY)||e.scrollHeight<=e.clientHeight+1) continue; if(dir<0?e.scrollTop>0:e.scrollTop+e.clientHeight<e.scrollHeight-1) return e; } return null; };
   const hSc=n=>{ for(let e=n;e&&e!==document.body;e=e.parentElement){ if(/auto|scroll/.test(getComputedStyle(e).overflowX)&&e.scrollWidth>e.clientWidth+1) return e; } return null; };
-  const canPull=t=>!busy&&!$("#shade")&&!$("#pzStage")&&!PZHOLD&&pageY()<=0&&!t.closest("input,textarea,select,.pz-hold,#tabbar,.pz-ghost")&&!/^(INPUT|TEXTAREA|SELECT)$/.test((document.activeElement||{}).tagName||"");
+  const canPull=t=>!busy&&!REORD&&!$("#shade")&&!$("#pzStage")&&!PZHOLD&&pageY()<=0&&!t.closest("input,textarea,select,.pz-hold,#tabbar,.pz-ghost")&&!/^(INPUT|TEXTAREA|SELECT)$/.test((document.activeElement||{}).tagName||"");
   const paint=d=>{ const p=Math.min(1,d/TH); el.style.transition="none"; el.style.opacity=d>0?Math.min(1,.3+p).toFixed(2):"0"; el.style.transform=`translate(-50%,${(HID+d).toFixed(1)}px)`; arc.style.strokeDasharray=`${p>=1?100:(p*82).toFixed(1)} 100`; svg.style.transform=`rotate(${(d*3.2).toFixed(0)}deg)`; el.classList.toggle("ready",p>=1); };
   const retract=()=>{ el.style.transition=""; el.classList.remove("ready"); el.style.opacity="0"; el.style.transform=`translate(-50%,${HID}px)`; };
   const refresh=()=>{ busy=true; el.style.transition=""; el.classList.remove("ready"); el.classList.add("spin"); arc.style.strokeDasharray=""; svg.style.transform=""; el.style.opacity="1"; el.style.transform=`translate(-50%,${HID+64}px)`;
@@ -3914,7 +4240,7 @@ pzKeepPop();
   document.addEventListener("touchstart",e=>{ if(!on()) return; if(e.touches.length!==1){ end(false); return; } const t=e.touches[0], tg=e.target.nodeType===1?e.target:e.target.parentElement; T={x0:t.clientX,y0:t.clientY,y:t.clientY,axis:"",tg,ok:canPull(tg),pull:false,block:false,free:false,d:0,base:0}; },{passive:true,capture:true});
   document.addEventListener("touchmove",e=>{ if(!T||!on()) return; if(e.touches.length!==1){ end(false); return; }
     const t=e.touches[0], dx=t.clientX-T.x0, dy=t.clientY-T.y0, step=t.clientY-T.y, stop=()=>{ if(e.cancelable) e.preventDefault(); }; T.y=t.clientY;
-    if(busy){ stop(); return; }
+    if(busy||REORD){ stop(); return; }
     if(!T.axis){ if(Math.abs(dx)<5&&Math.abs(dy)<5) return; T.axis=Math.abs(dx)>Math.abs(dy)?"x":"y";
       if(T.axis==="x") T.free=!!(T.tg.closest("input,textarea")||hSc(T.tg));
       else if(!mov(T.tg,dy>0?-1:1)){ if(T.ok&&dy>0){ T.pull=true; T.base=dy; const b=$("#topbar").getBoundingClientRect(); el.classList.remove("spin"); el.style.top=(b.height?b.bottom:0)+"px"; } else T.block=true; } }
