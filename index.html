@@ -1081,8 +1081,8 @@ html.pz-sliding .layout{overflow-x:clip}
 .pz-ghost.pz-gcol{z-index:8;background:var(--bg)}
 .pz-exp{position:relative;z-index:7;min-height:100vh;background:var(--bg)}
 .pz-flyring{position:fixed!important;z-index:9;margin:0;transform-origin:0 0;pointer-events:none}
-html.phone .pz-gsum .pz-rr{flex:none;width:46px;height:46px}
-html.phone .pz-gsum .pz-rr .ring-c b{font-size:12px}
+html.phone .pz-gsum .pz-rr{width:64px;height:64px}
+html.phone .pz-gsum .pz-rr .ring-c b{font-size:16px}
 /* 弹窗 */
 html.phone .mfoot [hidden]{display:none!important}
 html.phone:has(#shade) #toastRoot{top:calc(10px + env(safe-area-inset-top,0px));bottom:auto} /* 窗口开着时提示移到最上面，不挡住按住的按钮 */
@@ -1405,55 +1405,6 @@ html.phone :is(.pz-li,.pz-rm,.pz-sw,summary).pz-pressed{background-color:var(--c
 .steps .linkbtn{position:relative;z-index:1}
 html.phone .kx{width:44px;height:44px}
 @media (max-width:680px){ .td-row:has(.dbtns){grid-template-columns:34px minmax(0,1fr)} .td-row>.dbtns{grid-column:2;justify-content:flex-start} }
-/* ================= 目标页：滚轮卡片（2026-11-20） =================
-   5 个固定槽位：隐藏、胶囊、展开、胶囊、隐藏。位置/高度/透明度/模糊度都由槽位决定（JS 算），卡片只负责放内容 */
-.gw{position:relative;margin-top:14px;overflow:hidden;outline:none;border-radius:var(--r-lg);-webkit-tap-highlight-color:transparent}
-.gw:focus-visible{box-shadow:0 0 0 3px rgba(var(--acc-rgb),.35)}
-.gw.dots .gw-card{right:30px}
-.gw-card{position:absolute;left:0;right:0;top:0;transform-origin:50% 50%;background:var(--card);border:1px solid var(--line);box-shadow:var(--card-sh);overflow:hidden;visibility:hidden;contain:layout paint}
-.gw-cap{position:absolute;left:0;right:0;top:0;width:100%;height:var(--cap,56px);display:flex;align-items:center;gap:12px;padding:0 20px;margin:0;background:none;border:0;border-radius:0;color:var(--ink);font:inherit;text-align:left;cursor:pointer;user-select:none;-webkit-user-select:none;touch-action:none}
-.gw-cap .gw-ic{flex:none;display:grid;place-items:center;width:30px;height:30px;border-radius:50%;background:rgba(var(--acc-rgb),.12);color:var(--acc-ink,var(--cyan))}
-.gw-cap .gw-ic svg{width:16px;height:16px}
-.gw-cap b{flex:0 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;font-size:15px;font-weight:700;white-space:nowrap}
-.gw-cap small{flex:1;min-width:0;color:var(--muted);font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.gw-cap .gw-n{flex:none;color:var(--muted);font-size:12px;font-variant-numeric:tabular-nums}
-.gw-full{position:absolute;left:0;right:0;top:0;height:var(--E,400px);overflow-x:hidden;overflow-y:auto;overscroll-behavior:contain;display:flex;flex-direction:column;scrollbar-width:thin}
-.gw-full>*{flex:none;margin:0!important;border:0!important;border-radius:0!important;box-shadow:none!important}
-.gw-full>.gw-main{flex:1 0 auto}
-.gw-full>.tip{border-bottom:1px solid var(--line)!important}
-.gw-full>.note{padding:0 22px 18px}
-.gw-full details.sec>summary{position:sticky;top:0;z-index:3;background:var(--card);cursor:default;pointer-events:none;border-radius:0}
-.gw-full details.sec>summary::after{display:none}
-.gw-full .card.hero{align-content:center}
-.gw-kpiwrap .kpis{margin-top:4px}
-.gw-dots{position:absolute;right:6px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;align-items:center;gap:4px;z-index:20}
-.gw-dot{display:grid;place-items:center;width:20px;height:18px;padding:0;margin:0;background:none;border:0;cursor:pointer}
-.gw-dot i{display:block;width:6px;height:6px;border-radius:4px;background:var(--muted);opacity:.45;transition:height .25s var(--ease),opacity .25s,background .25s}
-.gw-dot[aria-current="true"] i{height:16px;opacity:1;background:var(--cyan)}
-.gw-dot:hover i{opacity:.9}
-.gw.drag,.gw.drag *{cursor:grabbing!important;user-select:none!important;-webkit-user-select:none!important}
-html:not(.phone) .main.gw-page{padding-bottom:20px}
-html.phone .gw{margin-top:0}
-html.phone .gw-cap{padding:0 14px;gap:8px}
-html.phone .gw-cap .gw-ic{width:22px;height:22px}
-html.phone .gw-cap .gw-ic svg{width:13px;height:13px}
-html.phone .gw-cap b{font-size:13.5px}
-html.phone .gw-cap small{font-size:12px}
-html.phone .gw-cap .gw-n{font-size:11px}
-html.phone .gw-full .hero>.ring{display:none}
-html.phone .gw-full .card.hero{align-content:start}
-html.phone .gw-full>.tip{padding:10px 14px;font-size:13px;gap:8px}
-html.phone .pz-gtop{margin-bottom:8px;padding:6px 14px 8px}
-html.phone .pz-gsum{gap:10px;margin:0}
-html.phone .pz-gsum .pz-lt b{font-size:14.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;overflow-wrap:normal}
-html.phone .pz-gsum .pz-lt small{margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-html.phone .pz-gsum .pz-lt small .pill{font-size:11.5px;padding:1px 8px}
-html.phone .pz-gsum .pz-gact{flex:none;gap:8px}
-html.phone .pz-gsum .pz-gact .btn{flex:none;min-height:42px;padding:0 13px;font-size:14px}
-html.phone .gw-full>.note{padding:0 16px 16px}
-.pz-gtop .pz-gact{gap:10px;margin:0}
-@media (max-width:680px){ .gw-full .kpis{grid-template-columns:repeat(2,minmax(0,1fr))} }
-@media print{ .gw{height:auto!important;overflow:visible} .gw-card{position:static;transform:none!important;height:auto!important;opacity:1!important;filter:none!important;visibility:visible!important;margin-bottom:12px} .gw-cap,.gw-dots{display:none} .gw-full{position:static;height:auto;opacity:1!important;visibility:visible!important;overflow:visible} }
 </style>
 <script>/* 默认浅色（C 风）；选过深色才用深色。在第一次画面之前就套上，不会闪 */try{if(localStorage.getItem("brader-theme")!=="dark")document.documentElement.classList.add("light");else{var tc=document.querySelector('meta[name="theme-color"]');if(tc)tc.setAttribute("content","#0E1626")}}catch(e){document.documentElement.classList.add("light")}</script>
 </head>
@@ -2194,7 +2145,7 @@ function render(){
   if(isPh()&&VIEW.page==="paused"){ PZSEG="paused"; VIEW={page:"goals",id:null}; }
   closeMenu(); clearInterval(QT);
   renderSide();
-  const m=$("#main"); m.classList.remove("enter","pz-goal","gw-page");
+  const m=$("#main"); m.classList.remove("enter","pz-goal");
   ({overview:renderOverview,goals:renderGoals,goal:renderGoal,debt:renderDebt,me:renderMe,ask:renderAsk,done:renderDone,paused:renderPaused})[VIEW.page]();
   if(ENTER){ void m.offsetWidth; m.classList.add("enter"); clearTimeout(ENTER_T); ENTER_T=setTimeout(()=>m.classList.remove("enter"),fxOn()?2000:450); if(fxOn()) hyperText(m); }
   ENTER=false;
@@ -2627,7 +2578,7 @@ function bindTodo(g,steps){
   on("#tdDep",()=>openQuick(g));
   on("#tdDone",()=>completeGoal(g));
   on("#tdEdit",()=>openEdit(g));
-  on("#tdAll",()=>{ if(GWX&&GWX.host.isConnected){ GWX.to("steps"); return; } const d=$('#main details.sec[data-sec="steps"]'); if(!d) return; d.open=true; SEC.steps=true; d.scrollIntoView({behavior:REDUCE.matches?"auto":"smooth",block:"start"}); });
+  on("#tdAll",()=>{ const d=$('#main details.sec[data-sec="steps"]'); if(!d) return; d.open=true; SEC.steps=true; d.scrollIntoView({behavior:REDUCE.matches?"auto":"smooth",block:"start"}); });
   on("#tdStep",()=>{ const k=$("#tdStep").dataset.k, st=steps.find(x=>x.k===k); if(!st) return;
     const snap=snapState(), view={page:VIEW.page,id:VIEW.id}; g.steps[k]=true; if(k==="auto") g.autoAmt=autoNow(g); save(); render(); offerUndo(k==="ef"?"好，救命的钱已经有了":`做好了：${st.h}`,snap,view); });
   on("#tdAuto",()=>{ const snap=snapState(), view={page:VIEW.page,id:VIEW.id}, v=autoNow(g); g.autoAmt=v; save(); render(); offerUndo(`自动转账记成 ${rm(v)}`,snap,view); });
@@ -2807,7 +2758,6 @@ function renderGoal(){
   bindTodo(g,steps); bindKeep();
   if(WI) bindWhatIf(g,s,base,WI,wiNow);
   if(isPh()) pzGoal(g,s,left);
-  goalWheel(g,s,left,w);
 }
 // 目标页「方案」最上面：照先后顺序分到多少，会晚的话给一个按了才改的按钮
 function flowTipHTML(g,s){ if(g.status!=="active"||g.saved>=g.target||isExp(g,s)) return "";
@@ -3935,146 +3885,24 @@ function renderGoalsPh(){ const L={active:activeSorted(),paused:GOALS.filter(g=>
     r.addEventListener("touchend",()=>{ r.style.transition=""; if(!drag){ r.style.transform=""; return; } const open=base+dx<-W/2; $("#main").querySelectorAll(".pz-rw.open").forEach(o=>{ if(o!==w){ o.classList.remove("open"); o.querySelector(".pz-row").style.transform=""; } }); w.classList.toggle("open",open); r.style.transform=open?`translateX(${-W}px)`:""; });
     r.addEventListener("click",e=>{ if(w.classList.contains("open")){ e.preventDefault(); e.stopPropagation(); w.classList.remove("open"); r.style.transform=""; } },true); });
 }
-function pzGoal(g,s,left){ const M=$("#main"); M.classList.add("pz-goal");
+function pzGoal(g,s,left){ const M=$("#main"); M.classList.add("pz-goal"); if(PZT.id!==g.id) PZT={id:g.id,tab:"now"};
+  const hasTodo=!!M.querySelector("#todo"), T=[["now","这个月"],["plan","计划"],["log","记录"]];
+  [...M.children].forEach(el=>{ let k="now"; if(el.matches(".back,.phead,.kpis")) return; if(el.matches(".hero")) k=hasTodo?"plan":"now"; else if(el.matches('details[data-sec="plan"],details[data-sec="steps"]')) k="plan"; else if(el.matches('details[data-sec="chart"],details[data-sec="log"],.note')) k="log"; el.dataset.pzt=k; });
+  M.querySelectorAll("details.sec").forEach(d=>{ d.open=true; const su=d.querySelector("summary"); su.tabIndex=-1; su.addEventListener("click",e=>e.preventDefault()); });
+  const row=(k,el)=>{ if(!el) return; const d=document.createElement("div"); d.className="pz-gact"; d.dataset.pzt=k; d.appendChild(el); const first=M.querySelector(`[data-pzt="${k}"]`); first?first.before(d):M.appendChild(d); };
+  row("plan",$("#aEdit")); row("log",$("#aUpd")); row("now",$("#aEFUsed"));
   const more=M.querySelector(".more"); if(more) $("#topbar").appendChild(more);
   const top=document.createElement("div"); top.className="pz-gtop";
-  top.innerHTML=`<div class="pz-gsum"><span class="ring pz-rr pz-fly">${gauge(s.pct,"gs-"+g.id)}<span class="ring-c"><b>${Math.round(s.pct*100)}%</b></span></span><span class="pz-lt"><b>${left>0?"还差 "+rm(left):"金额够了"}</b><small>${stvPill(g,s)}</small></span><div class="pz-gact"></div></div>`;
-  const act=top.querySelector(".pz-gact"); ["#aUpd","#aEFUsed","#aEdit"].forEach(id=>{ const b=$(id); if(b) act.appendChild(b); });
-  M.prepend(top);
+  top.innerHTML=`<div class="pz-gsum"><span class="ring pz-rr pz-fly">${gauge(s.pct,"gs-"+g.id)}<span class="ring-c"><b>${Math.round(s.pct*100)}%</b></span></span><span class="pz-lt"><b>${left>0?"还差 "+rm(left):"金额够了"}</b><small>截止 ${ymLabel(g.deadline)}</small></span>${stvPill(g,s)}</div>
+    <div class="pz-seg" role="tablist" aria-label="目标内容">${T.map(([k,t])=>`<button type="button" role="tab" data-pzg="${k}">${t}</button>`).join("")}</div>`;
+  M.prepend(top); top.querySelectorAll("[data-pzg]").forEach(b=>b.onclick=()=>pzTab(b.dataset.pzg)); pzTab(PZT.tab);
+  const all=$("#tdAll"); if(all) all.onclick=()=>{ pzTab("plan"); const d=M.querySelector('details[data-sec="steps"]'); if(d) d.scrollIntoView({block:"start"}); };
 }
-/* ================= 目标页：滚轮卡片（2026-11-20） =================
-   一个区块一张卡片，排成可以无限循环的滚轮。5 个固定槽位：隐藏、胶囊、展开、胶囊、隐藏。
-   槽位决定卡片的位置、高度、透明度、模糊度；卡片只放内容，换内容不用改槽位。
-   旧内容先淡出、新内容晚淡入；移动时有运动模糊，停稳就清楚。 */
-let GW={v:null,id:null,key:"hero",sc:0}, GWX=null;
-addEventListener("resize",()=>{ if(GWX) GWX.layout(); });
-function goalWheel(g,s,left,w){ const M=$("#main"), PH=isPh();
-  if(GW.v!==VIEW){ const r=PZT.r&&PZT.id===g.id; GW={v:VIEW,id:g.id,key:r?PZT.tab:"hero",sc:r?(+PZT.sc||0):0}; delete PZT.r; }
-  const one=q=>M.querySelector(":scope>"+q), C=[];
-  const add=(key,icon,title,hint,el,pre,post)=>{ if(!el) return; el.classList.add("gw-main"); C.push({key,icon,title,hint,el:[...(pre||[]),el,...(post||[])]}); };
-  add("hero","target","概况",`${Math.round(s.pct*100)}% · ${left>0?"还差 "+rm(left):"金额够了"}`,one(".hero"),[...M.querySelectorAll(":scope>.tip")]);
-  const todo=one("#todo"); if(todo){ const b=todo.querySelector(".td-row b"); add("todo","clock","这个月要做的事",b?b.textContent:"",todo); }
-  add("keep","shield","留住你的计划","几件小事，资料和习惯都不会丢",one("#keep"));
-  const kp=one(".kpis"); if(kp&&!PH){ const wr=document.createElement("section"); wr.className="card gw-kpiwrap";
-    wr.innerHTML=`<div class="chead"><div><h2>四个数字</h2><p class="sub">已存、还差、每月、完成日期</p></div></div>`; wr.appendChild(kp);
-    add("kpis","spark","四个数字",`已存 ${rm(g.saved)} · 还差 ${rm(left)}`,wr); }
-  const ms=[...M.querySelectorAll(":scope>section.card")].find(x=>x.querySelector(".ms"));
-  add("ms","trophy","里程碑",g.status==="done"||!w?"全部到达":`下一站 ${wpName(w)}，再存 ${rm(w.gap)}`,ms);
-  const note=one(".note");
-  [["plan","key","Brader 方案"],["steps","check","步骤清单"],["chart","eye","进度分析"],["log","save","存款记录与备注"]].forEach(([k,ic,t])=>{ const d=one(`details.sec[data-sec="${k}"]`); if(!d) return;
-    d.open=true; const su=d.querySelector("summary"), h=su.querySelector(".hint"); su.tabIndex=-1; su.addEventListener("click",e=>e.preventDefault());
-    add(k,ic,t,h?h.textContent:"",d,null,k==="plan"&&note?[note]:null); });
-  if(!C.length) return;
-  const host=document.createElement("div"); host.id="gWheel"; M.appendChild(host); M.classList.add("gw-page");
-  const i0=C.findIndex(c=>c.key===GW.key);
-  GWX=gwMake(host,C,{start:Math.max(0,i0),sc:i0>=0?GW.sc:0,dots:!PH,label:"目标内容。上下滑动、滚轮或上下键换卡片",
-    watch:[one(".phead"),one(".pz-gtop")].filter(Boolean),
-    onChange:(i,c)=>{ if(GW.key!==c.key){ GW.key=c.key; GW.sc=0; } PZT={id:g.id,tab:c.key,sc:GW.sc}; },
-    onScroll:(c,y)=>{ GW.sc=y; PZT.sc=y; }});
-}
-// 滚轮本体：cards = [{key,icon,title,hint,el:[...元素]}]，内容随便换，槽位逻辑不变
-function gwMake(host,cards,o){
-  const N=cards.length, NODRAG="input,textarea,select,option,.chart,[contenteditable],.gw-dots";
-  host.className="gw"+(o.dots&&N>1?" dots":""); host.tabIndex=0; host.setAttribute("role","region"); host.setAttribute("aria-roledescription","滚轮卡片"); host.setAttribute("aria-label",o.label||"卡片");
-  const wrap=x=>{ x=((x%N)+N)%N; return x>N/2?x-N:x; }, idx=x=>((Math.round(x)%N)+N)%N, cl=x=>x<0?0:x>1?1:x;
-  let pos=o.start||0, tgt=pos, vel=0, act=-1, raf=0, lt=0, held=false, H=0, CAP=56, GAP=12, E=300, STEP=160, S=[], SUPP=false, NAT=0, WH=null, WT=0, D=null, T=null;
-  const K=cards.map((c,i)=>{ const el=document.createElement("div"); el.className="gw-card"; el.dataset.key=c.key;
-    const cap=document.createElement("button"); cap.type="button"; cap.className="gw-cap"; cap.tabIndex=-1;
-    cap.innerHTML=`<span class="gw-ic" aria-hidden="true">${c.icon?svgI(c.icon):""}</span><b></b><small></small><span class="gw-n" aria-hidden="true">${i+1}/${N}</span>`;
-    cap.querySelector("b").textContent=c.title; cap.querySelector("small").textContent=c.hint||"";
-    cap.setAttribute("aria-label",`第 ${i+1} 张，共 ${N} 张：${c.title}${c.hint?"，"+c.hint:""}`);
-    const full=document.createElement("div"); full.className="gw-full"; full.setAttribute("role","group"); full.setAttribute("aria-label",c.title);
-    c.el.forEach(x=>{ if(x) full.appendChild(x); });
-    el.append(cap,full); host.appendChild(el);
-    cap.addEventListener("click",()=>to(i));
-    full.addEventListener("scroll",()=>{ if(i===act&&o.onScroll) o.onScroll(c,full.scrollTop); },{passive:true});
-    return {el,cap,full,c}; });
-  let dots=null;
-  if(o.dots&&N>1){ dots=document.createElement("div"); dots.className="gw-dots";
-    K.forEach((k,i)=>{ const b=document.createElement("button"); b.type="button"; b.className="gw-dot"; b.tabIndex=-1; b.title=k.c.title; b.setAttribute("aria-label","去："+k.c.title); b.innerHTML="<i></i>"; b.onclick=()=>to(i); dots.appendChild(b); });
-    host.appendChild(dots); }
-  const live=document.createElement("p"); live.className="vh"; live.setAttribute("aria-live","polite"); host.appendChild(live);
-  // ---- 槽位：0 隐藏、1 胶囊、2 展开、3 胶囊、4 隐藏 ----
-  function apply(){ E=Math.max(160,H-2*(CAP+GAP)); host.style.height=H+"px"; host.style.setProperty("--cap",CAP+"px"); host.style.setProperty("--E",E+"px");
-    const y2=CAP+GAP, y3=y2+E+GAP;
-    S=[{y:-CAP*.7,h:CAP,o:0,b:8,s:.9},{y:0,h:CAP,o:.9,b:0,s:.965},{y:y2,h:E,o:1,b:0,s:1},{y:y3,h:CAP,o:.9,b:0,s:.965},{y:H-CAP*.3,h:CAP,o:0,b:8,s:.9}];
-    STEP=Math.max(110,Math.min(210,(CAP/2+GAP+E/2)*.62)); paint(); }
-  function layout(){ if(!host.isConnected) return; const PH=isPh(), MIN=PH?340:380; CAP=PH?36:58; GAP=PH?6:12;
-    const sc=pzSC(), r=host.getBoundingClientRect(), top=r.top+pageY()-(sc?sc.getBoundingClientRect().top:0), vh=sc?sc.clientHeight:innerHeight;
-    const pb=parseFloat(getComputedStyle(host.parentElement).paddingBottom)||0;
-    H=Math.max(MIN,Math.min(1000,Math.floor(vh-top-pb-(PH?4:20)))); apply();
-    const d=sc||document.scrollingElement||document.documentElement, over=d.scrollHeight-d.clientHeight; // 量错了就再缩一点，让整页刚好放得下
-    if(over>0&&H-over>=MIN){ H-=over; apply(); } }
-  function paint(){ const mb=fxOn()?Math.min(7,Math.abs(vel)*1.4):0;
-    K.forEach((k,i)=>{ const p=wrap(i-pos), ap=Math.abs(p), el=k.el;
-      if(ap>2.98||!S.length){ el.style.visibility="hidden"; return; }
-      const q=Math.max(0,Math.min(4,p+2)), a=Math.min(3,Math.floor(q)), t=q-a, A=S[a], B=S[a+1], L=(m,n)=>m+(n-m)*t;
-      const e=Math.max(0,1-ap), op=L(A.o,B.o), bl=L(A.b,B.b)+mb, co=cl(1-e/.4), fo=cl((e-.6)/.4); // 旧内容先淡出（0–40%），新内容晚淡入（60–100%）
-      el.style.visibility=op>.01?"visible":"hidden";
-      el.style.transform=`translate3d(0,${L(A.y,B.y).toFixed(2)}px,0) scale(${L(A.s,B.s).toFixed(4)})`;
-      el.style.height=L(A.h,B.h).toFixed(2)+"px"; el.style.opacity=op.toFixed(3); el.style.borderRadius=(CAP/2+(22-CAP/2)*e).toFixed(1)+"px";
-      el.style.filter=bl>.2?`blur(${bl.toFixed(2)}px)`:""; el.style.zIndex=String(10-Math.round(ap*3));
-      k.cap.style.opacity=co.toFixed(3); k.cap.style.visibility=co>.01?"visible":"hidden"; k.cap.style.pointerEvents=co>.6?"":"none";
-      k.full.style.opacity=fo.toFixed(3); k.full.style.visibility=fo>.01?"visible":"hidden"; k.full.style.pointerEvents=fo>.98?"":"none"; }); }
-  function settle(){ pos=tgt=idx(tgt); vel=0; paint(); const i=pos; if(i===act) return; act=i;
-    K.forEach((k,j)=>{ k.full.inert=j!==i; k.el.classList.toggle("on",j===i); });
-    if(dots) [...dots.children].forEach((b,j)=>b.setAttribute("aria-current",String(j===i)));
-    live.textContent=`第 ${i+1} 张，共 ${N} 张：${K[i].c.title}`;
-    if(o.onChange) o.onChange(i,K[i].c); }
-  function kick(){ if(!raf){ lt=performance.now(); raf=requestAnimationFrame(tick); } }
-  function tick(now){ raf=0; if(!host.isConnected) return; const dt=Math.min(.05,Math.max(.001,(now-lt)/1000)); lt=now;
-    if(held){ vel*=Math.exp(-dt*10); paint(); raf=requestAnimationFrame(tick); return; } // 按着不动，模糊慢慢退掉
-    if(REDUCE.matches){ pos=tgt; settle(); return; }
-    const k=200, d=2*Math.sqrt(k)*.86; vel+=(k*(tgt-pos)-d*vel)*dt; pos+=vel*dt;
-    if(Math.abs(tgt-pos)<.002&&Math.abs(vel)<.03){ pos=tgt; settle(); return; }
-    paint(); raf=requestAnimationFrame(tick); }
-  function to(i){ tgt=Math.round(tgt)+wrap(i-tgt); kick(); } // 走最近的那一边（无限循环）
-  function step(n){ tgt=Math.round(tgt)+n; kick(); }
-  // ---- 拖动 ----
-  const dStart=y=>{ held=true; D={y0:y,p0:pos,lt:performance.now()}; host.classList.add("drag"); kick(); };
-  const dMove=y=>{ const np=D.p0-(y-D.y0)/STEP, now=performance.now(), iv=(np-pos)/Math.max(.008,(now-D.lt)/1000); vel=vel*.5+iv*.5; pos=np; tgt=np; D.lt=now; kick(); };
-  const dEnd=()=>{ if(!D) return; held=false; host.classList.remove("drag"); const v=performance.now()-D.lt>90?0:vel, s0=Math.round(D.p0);
-    let t=Math.round(pos+v*.11); t=Math.max(s0-3,Math.min(s0+3,t)); if(t===s0&&Math.abs(v)>1.6) t=s0+Math.sign(v);
-    tgt=t; D=null; SUPP=true; setTimeout(()=>{ SUPP=false; },60); kick(); };
-  // 手指下面的内容还能往这个方向滑，就让它自己滑
-  const canSc=(n,root,dy)=>{ for(let e=n;e&&e!==host;e=e.parentElement){ if(e===root||/(auto|scroll)/.test(getComputedStyle(e).overflowY)){
-      if(e.scrollHeight>e.clientHeight+1&&(dy>0?e.scrollTop+e.clientHeight<e.scrollHeight-1:e.scrollTop>0)) return true; } if(e===root) break; } return false; };
-  host.addEventListener("click",e=>{ if(SUPP){ e.preventDefault(); e.stopPropagation(); SUPP=false; } },true);
-  host.addEventListener("dragstart",e=>{ if(D) e.preventDefault(); });
-  host.addEventListener("pointerdown",e=>{ if(e.pointerType==="touch"||e.button!==0||!e.target.closest||e.target.closest(NODRAG)) return;
-    const x0=e.clientX, y0=e.clientY, id=e.pointerId; let on=false;
-    const mv=ev=>{ if(ev.pointerId!==id) return; const dx=ev.clientX-x0, dy=ev.clientY-y0;
-      if(!on){ if(Math.abs(dx)<6&&Math.abs(dy)<6) return; if(Math.abs(dx)>Math.abs(dy)){ up(); return; } on=true; dStart(y0); const sl=getSelection&&getSelection(); if(sl) sl.removeAllRanges(); }
-      ev.preventDefault(); dMove(ev.clientY); };
-    const up=()=>{ removeEventListener("pointermove",mv); removeEventListener("pointerup",up); removeEventListener("pointercancel",up); if(on) dEnd(); };
-    addEventListener("pointermove",mv); addEventListener("pointerup",up); addEventListener("pointercancel",up); });
-  host.addEventListener("touchstart",e=>{ if(e.touches.length!==1){ if(T&&T.m==="d") dEnd(); T=null; return; } const t=e.touches[0]; T={x:t.clientX,y:t.clientY,m:"",tg:e.target.nodeType===1?e.target:e.target.parentElement}; },{passive:true});
-  host.addEventListener("touchmove",e=>{ if(!T) return; const t=e.touches[0], dx=t.clientX-T.x, dy=t.clientY-T.y;
-    if(!T.m){ if(Math.abs(dx)<6&&Math.abs(dy)<6) return; const k=K[idx(tgt)];
-      if(Math.abs(dx)>Math.abs(dy)||T.tg.closest(NODRAG)) T.m="x";
-      else if(k.full.contains(T.tg)&&canSc(T.tg,k.full,-dy)) T.m="n";
-      else { T.m="d"; dStart(T.y); } }
-    if(T.m!=="d") return; if(e.cancelable) e.preventDefault(); dMove(t.clientY); },{passive:false});
-  const tEnd=()=>{ if(T&&T.m==="d") dEnd(); T=null; };
-  host.addEventListener("touchend",tEnd,{passive:true}); host.addEventListener("touchcancel",tEnd,{passive:true});
-  // ---- 滚轮 / 触控板：内容滑到尽头才换卡片，一次最多两张 ----
-  host.addEventListener("wheel",e=>{ if(e.ctrlKey) return; const dy=e.deltaY*(e.deltaMode===1?18:e.deltaMode===2?H:1); if(!dy||Math.abs(e.deltaX)>Math.abs(dy)) return;
-    const now=performance.now(), k=K[idx(tgt)], tg=e.target.nodeType===1?e.target:e.target.parentElement;
-    if(!WH&&!held&&k.full.contains(tg)&&canSc(tg,k.full,dy)){ NAT=now; return; }
-    e.preventDefault(); if(held&&!WH) return;
-    if(now-NAT<240){ NAT=now; return; } // 刚刚还在滑内容：惯性不要直接换卡片
-    if(!WH){ WH={p0:Math.round(tgt),lt:now}; held=true; }
-    const np=Math.max(WH.p0-1.6,Math.min(WH.p0+1.6,pos+dy/STEP*.8)), iv=(np-pos)/Math.max(.008,(now-WH.lt)/1000); vel=vel*.5+iv*.5; pos=np; tgt=np; WH.lt=now; kick();
-    clearTimeout(WT); WT=setTimeout(()=>{ held=false; const m=pos-WH.p0; tgt=Math.abs(m)<.1?WH.p0:m>0?Math.ceil(pos-.15):Math.floor(pos+.15); WH=null; kick(); },140); },{passive:false});
-  // ---- 键盘 ----
-  host.addEventListener("keydown",e=>{ if(e.target!==host&&!e.target.closest(".gw-cap,.gw-dot")) return;
-    const m={ArrowDown:1,PageDown:1,ArrowUp:-1,PageUp:-1}[e.key];
-    if(m){ e.preventDefault(); step(m); } else if(e.key==="Home"){ e.preventDefault(); to(0); } else if(e.key==="End"){ e.preventDefault(); to(N-1); } });
-  layout(); if(o.sc) K[idx(pos)].full.scrollTop=o.sc; settle();
-  if(o.watch&&o.watch.length&&window.ResizeObserver){ const ro=new ResizeObserver(()=>{ if(!host.isConnected){ ro.disconnect(); return; } layout(); }); o.watch.forEach(x=>ro.observe(x)); }
-  [450,1000].forEach(ms=>setTimeout(layout,ms)); // 进场动画做完再量一次
-  return {host,layout,step,to:k=>{ const i=typeof k==="number"?k:K.findIndex(x=>x.c.key===k); if(i>=0) to(i); },get index(){ return act; },get key(){ return act>=0?K[act].c.key:null; }};
-}
+function pzTab(k){ PZT.tab=k; const M=$("#main"); M.querySelectorAll("[data-pzt]").forEach(el=>el.classList.toggle("pz-on",el.dataset.pzt===k)); M.querySelectorAll("[data-pzg]").forEach(b=>b.setAttribute("aria-selected",String(b.dataset.pzg===k))); drawBeams(); }
+// 目标详情左右滑换分页（滑杆、图表、里程碑上面不算）
+(()=>{ let x0=0,y0=0,skip=true; const M=$("#main");
+  M.addEventListener("touchstart",e=>{ skip=!M.classList.contains("pz-goal")||!!e.target.closest("input,textarea,select,.ms,.chart,.tscroll"); x0=e.touches[0].clientX; y0=e.touches[0].clientY; },{passive:true});
+  M.addEventListener("touchend",e=>{ if(skip) return; const t=e.changedTouches[0], dx=t.clientX-x0, dy=t.clientY-y0; if(Math.abs(dx)<70||Math.abs(dy)>50) return; const K=["now","plan","log"], i=K.indexOf(PZT.tab)+(dx<0?1:-1); if(K[i]) pzTab(K[i]); },{passive:true}); })();
 function renderMe(){ const rows=keepRows();
   const li=(id,ic,t,d)=>`<button class="pz-li" type="button" id="${id}">${svgI(ic)}<span class="pz-lt"><b>${t}</b>${d?`<small>${d}</small>`:""}</span>${svgI("next")}</button>`;
   const sw=(id,ic,t,on,st)=>`<button class="side-link fxsw pz-sw" type="button" id="${id}" role="switch" aria-checked="${on}">${svgI(ic)}<span>${t}${st?` <span class="st">${st}</span>`:""}</span><span class="sw" aria-hidden="true"></span></button>`;
@@ -4746,13 +4574,13 @@ if(REDUCE.addEventListener) REDUCE.addEventListener("change",()=>{ applyFX(); pa
 $("#scrim").onclick=()=>setDrawer(false);
 if(window.matchMedia) matchMedia("(min-width:961px)").addEventListener("change",e=>{ if(e.matches&&DRAWER) setDrawer(false); });
 if(PHQ.addEventListener) PHQ.addEventListener("change",()=>{ applyPh(); closeSheet(); ENTER=true; render(); });
-try{ const r=JSON.parse(sessionStorage.getItem("brader-ptr")||"null"); sessionStorage.removeItem("brader-ptr"); if(r&&r.v&&r.v.page&&isPh()){ VIEW=r.v; PZSEG=r.seg||PZSEG; PZT=r.t?Object.assign(r.t,{r:true}):PZT; PZPREV=r.prev||null; } }catch(e){}
+try{ const r=JSON.parse(sessionStorage.getItem("brader-ptr")||"null"); sessionStorage.removeItem("brader-ptr"); if(r&&r.v&&r.v.page&&isPh()){ VIEW=r.v; PZSEG=r.seg||PZSEG; PZT=r.t||PZT; PZPREV=r.prev||null; } }catch(e){}
 render();
 initCloud();
 watchFX();
 pzKeepPop();
 // 测试用：网址加 ?t=1 才打开，用户看不到
-if(/[?&]t=1(&|$)/.test(location.search)) window.__B={flowSim,flowNow,rollPlan,visOrder,orderAll,debtXOf,debtAuto,planDebt,stat,lateOf,flowWhen,fixDue,mInfo,mAlloc,stv,flowView,needBackup,saveTarget,nextUp,efFull,simDebts,gwMake,setFX,get GWX(){ return GWX; },get S(){ return S; },get G(){ return GOALS; },render,go};
+if(/[?&]t=1(&|$)/.test(location.search)) window.__B={flowSim,flowNow,rollPlan,visOrder,orderAll,debtXOf,debtAuto,planDebt,stat,lateOf,flowWhen,fixDue,mInfo,mAlloc,stv,flowView,needBackup,saveTarget,nextUp,efFull,simDebts,get S(){ return S; },get G(){ return GOALS; },render,go};
 /* ================= 手机版：页面固定（没有回弹）+ 下拉刷新 ================= */
 (()=>{ const TH=72, MAX=104, HID=-52;
   const el=document.createElement("div"); el.id="pzPtr"; el.setAttribute("aria-hidden","true");
@@ -4763,7 +4591,7 @@ if(/[?&]t=1(&|$)/.test(location.search)) window.__B={flowSim,flowNow,rollPlan,vi
   // 手指底下还能往这个方向滑的内容（里面的列表滑到尽头，就轮到外面的页面）
   const mov=(n,dir)=>{ for(let e=n;e&&e!==document.body;e=e.parentElement){ if(!/auto|scroll/.test(getComputedStyle(e).overflowY)||e.scrollHeight<=e.clientHeight+1) continue; if(dir<0?e.scrollTop>0:e.scrollTop+e.clientHeight<e.scrollHeight-1) return e; } return null; };
   const hSc=n=>{ for(let e=n;e&&e!==document.body;e=e.parentElement){ if(/auto|scroll/.test(getComputedStyle(e).overflowX)&&e.scrollWidth>e.clientWidth+1) return e; } return null; };
-  const canPull=t=>!busy&&!REORD&&!$("#shade")&&!$("#pzStage")&&!PZHOLD&&pageY()<=0&&!t.closest("input,textarea,select,.pz-hold,#tabbar,.pz-ghost,.gw")&&!/^(INPUT|TEXTAREA|SELECT)$/.test((document.activeElement||{}).tagName||"");
+  const canPull=t=>!busy&&!REORD&&!$("#shade")&&!$("#pzStage")&&!PZHOLD&&pageY()<=0&&!t.closest("input,textarea,select,.pz-hold,#tabbar,.pz-ghost")&&!/^(INPUT|TEXTAREA|SELECT)$/.test((document.activeElement||{}).tagName||"");
   const paint=d=>{ const p=Math.min(1,d/TH); el.style.transition="none"; el.style.opacity=d>0?Math.min(1,.3+p).toFixed(2):"0"; el.style.transform=`translate(-50%,${(HID+d).toFixed(1)}px)`; arc.style.strokeDasharray=`${p>=1?100:(p*82).toFixed(1)} 100`; svg.style.transform=`rotate(${(d*3.2).toFixed(0)}deg)`; el.classList.toggle("ready",p>=1); };
   const retract=()=>{ el.style.transition=""; el.classList.remove("ready"); el.style.opacity="0"; el.style.transform=`translate(-50%,${HID}px)`; };
   const refresh=()=>{ busy=true; el.style.transition=""; el.classList.remove("ready"); el.classList.add("spin"); arc.style.strokeDasharray=""; svg.style.transform=""; el.style.opacity="1"; el.style.transform=`translate(-50%,${HID+64}px)`;
