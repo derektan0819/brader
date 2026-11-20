@@ -1081,8 +1081,8 @@ html.pz-sliding .layout{overflow-x:clip}
 .pz-ghost.pz-gcol{z-index:8;background:var(--bg)}
 .pz-exp{position:relative;z-index:7;min-height:100vh;background:var(--bg)}
 .pz-flyring{position:fixed!important;z-index:9;margin:0;transform-origin:0 0;pointer-events:none}
-html.phone .pz-gsum .pz-rr{width:64px;height:64px}
-html.phone .pz-gsum .pz-rr .ring-c b{font-size:16px}
+html.phone .pz-gsum .pz-rr{flex:none;width:46px;height:46px}
+html.phone .pz-gsum .pz-rr .ring-c b{font-size:12px}
 /* 弹窗 */
 html.phone .mfoot [hidden]{display:none!important}
 html.phone:has(#shade) #toastRoot{top:calc(10px + env(safe-area-inset-top,0px));bottom:auto} /* 窗口开着时提示移到最上面，不挡住按住的按钮 */
@@ -1434,7 +1434,22 @@ html.phone .kx{width:44px;height:44px}
 .gw.drag,.gw.drag *{cursor:grabbing!important;user-select:none!important;-webkit-user-select:none!important}
 html:not(.phone) .main.gw-page{padding-bottom:20px}
 html.phone .gw{margin-top:0}
-html.phone .gw-cap{padding:0 16px;gap:10px}
+html.phone .gw-cap{padding:0 14px;gap:8px}
+html.phone .gw-cap .gw-ic{width:22px;height:22px}
+html.phone .gw-cap .gw-ic svg{width:13px;height:13px}
+html.phone .gw-cap b{font-size:13.5px}
+html.phone .gw-cap small{font-size:12px}
+html.phone .gw-cap .gw-n{font-size:11px}
+html.phone .gw-full .hero>.ring{display:none}
+html.phone .gw-full .card.hero{align-content:start}
+html.phone .gw-full>.tip{padding:10px 14px;font-size:13px;gap:8px}
+html.phone .pz-gtop{margin-bottom:8px;padding:6px 14px 8px}
+html.phone .pz-gsum{gap:10px;margin:0}
+html.phone .pz-gsum .pz-lt b{font-size:14.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;overflow-wrap:normal}
+html.phone .pz-gsum .pz-lt small{margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+html.phone .pz-gsum .pz-lt small .pill{font-size:11.5px;padding:1px 8px}
+html.phone .pz-gsum .pz-gact{flex:none;gap:8px}
+html.phone .pz-gsum .pz-gact .btn{flex:none;min-height:42px;padding:0 13px;font-size:14px}
 html.phone .gw-full>.note{padding:0 16px 16px}
 .pz-gtop .pz-gact{gap:10px;margin:0}
 @media (max-width:680px){ .gw-full .kpis{grid-template-columns:repeat(2,minmax(0,1fr))} }
@@ -3923,7 +3938,7 @@ function renderGoalsPh(){ const L={active:activeSorted(),paused:GOALS.filter(g=>
 function pzGoal(g,s,left){ const M=$("#main"); M.classList.add("pz-goal");
   const more=M.querySelector(".more"); if(more) $("#topbar").appendChild(more);
   const top=document.createElement("div"); top.className="pz-gtop";
-  top.innerHTML=`<div class="pz-gsum"><span class="ring pz-rr pz-fly">${gauge(s.pct,"gs-"+g.id)}<span class="ring-c"><b>${Math.round(s.pct*100)}%</b></span></span><span class="pz-lt"><b>${left>0?"还差 "+rm(left):"金额够了"}</b><small>截止 ${ymLabel(g.deadline)}</small></span>${stvPill(g,s)}</div><div class="pz-gact"></div>`;
+  top.innerHTML=`<div class="pz-gsum"><span class="ring pz-rr pz-fly">${gauge(s.pct,"gs-"+g.id)}<span class="ring-c"><b>${Math.round(s.pct*100)}%</b></span></span><span class="pz-lt"><b>${left>0?"还差 "+rm(left):"金额够了"}</b><small>${stvPill(g,s)}</small></span><div class="pz-gact"></div></div>`;
   const act=top.querySelector(".pz-gact"); ["#aUpd","#aEFUsed","#aEdit"].forEach(id=>{ const b=$(id); if(b) act.appendChild(b); });
   M.prepend(top);
 }
@@ -3984,7 +3999,7 @@ function gwMake(host,cards,o){
     const y2=CAP+GAP, y3=y2+E+GAP;
     S=[{y:-CAP*.7,h:CAP,o:0,b:8,s:.9},{y:0,h:CAP,o:.9,b:0,s:.965},{y:y2,h:E,o:1,b:0,s:1},{y:y3,h:CAP,o:.9,b:0,s:.965},{y:H-CAP*.3,h:CAP,o:0,b:8,s:.9}];
     STEP=Math.max(110,Math.min(210,(CAP/2+GAP+E/2)*.62)); paint(); }
-  function layout(){ if(!host.isConnected) return; const PH=isPh(), MIN=PH?340:380; CAP=PH?54:58; GAP=PH?10:12;
+  function layout(){ if(!host.isConnected) return; const PH=isPh(), MIN=PH?340:380; CAP=PH?36:58; GAP=PH?6:12;
     const sc=pzSC(), r=host.getBoundingClientRect(), top=r.top+pageY()-(sc?sc.getBoundingClientRect().top:0), vh=sc?sc.clientHeight:innerHeight;
     const pb=parseFloat(getComputedStyle(host.parentElement).paddingBottom)||0;
     H=Math.max(MIN,Math.min(1000,Math.floor(vh-top-pb-(PH?4:20)))); apply();
