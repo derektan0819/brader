@@ -37,8 +37,9 @@ async function fresh(req, e) {
   const old = await cache.match(key, { ignoreSearch: true });
   if (!old) return net;
   net.catch(() => {});
+  // 网站回 404 / 500 这类错误页时，用存好的版本，不要显示错误页
   return Promise.race([
-    net.catch(() => old),
+    net.then(res => res.ok ? res : old, () => old),
     new Promise(r => setTimeout(() => r(old), 3500))
   ]);
 }
